@@ -151,9 +151,10 @@ done
 if [ $flag -ne 4 ];then
     echo "Install WRFV4"
     if [ ! -s ~/WRF/configure ];then
-        if [ ! -s ~/WRFV4.0.TAR.gz ]
+        if [ ! -s ~/WRFV4.0.TAR.gz ];then
         echo -e "\nDownload WRF-4"
         wget -c http://www2.mmm.ucar.edu/wrf/src/WRFV4.0.TAR.gz
+        fi
         echo -e "\nExtract WRFV4.TAR.gz"
         tar -xf WRFV4.0.TAR.gz
     fi
