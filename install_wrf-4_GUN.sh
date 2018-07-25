@@ -104,7 +104,7 @@ if [ ! -s "/usr/local/hdf5-1.10.2/lib/libhdf5.a" ]; then
     if [ ! -s ~/.bashrc.wrf.bak ];then
         echo '' >> ~/.bashrc
         echo '#for hdf5-1.10.2' >> ~/.bashrc
-        echo 'export LD_LIBRARY_PATH=$PRO_PATH/usr/local/hdf5-1.10.2/lib' >> ~/.bashrc
+        echo 'export LD_LIBRARY_PATH=/usr/local/hdf5-1.10.2/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
         source ~/.bashrc
     fi
 fi
