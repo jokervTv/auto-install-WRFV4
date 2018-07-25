@@ -22,7 +22,7 @@ _install () {
         ./configure --prefix=/usr/local/NETCDF-4.4 --enable-netcdf-4 >/dev/null
         make -j4 >/dev/null 2>~/log-wrf/$1.make.log
     elif [ "$1" == "netcdf-fortran-4.4.4" ]; then
-        ./configure FC=gfortran --prefix=/usr/local/NETCDF-4.4 >/dev/null
+        ./configure FC=ifort --prefix=/usr/local/NETCDF-4.4 >/dev/null
         make -j4 >/dev/null 2>~/log-wrf/$1.make.log
     else
         ./configure --prefix=/usr/local/$1 >/dev/null
@@ -62,17 +62,6 @@ echo -e "\nMkdir ~/log-wrf"
 mkdir ~/log-wrf
 echo -e "\nMkdir ~/src-wrf"
 mkdir ~/src-wrf
-
-export CC=icc
-export CXX=icpc
-export CFLAGS='-O3 -xHost -ip -no-prec-div -static-intel'
-export CXXFLAGS='-O3 -xHost -ip -no-prec-div -static-intel'
-export F77=ifort
-export FC=ifort
-export F90=ifort
-export FFLAGS='-O3 -xHost -ip -no-prec-div -static-intel'
-export CPP='icc -E'
-export CXXCPP='icpc -E'
 
 echo -e "\nBackup .bashrc > .bashrc.wrf.bak"
 if [ ! -s ~/.bashrc.wrf.bak ];then
@@ -120,6 +109,16 @@ if [ ! -s "/usr/local/hdf5-1.10.2/lib/libhdf5.a" ]; then
     fi
 fi
 
+export CC=icc
+export CXX=icpc
+export CFLAGS='-O3 -xHost -ip -no-prec-div -static-intel'
+export CXXFLAGS='-O3 -xHost -ip -no-prec-div -static-intel'
+export F77=ifort
+export FC=ifort
+export F90=ifort
+export FFLAGS='-O3 -xHost -ip -no-prec-div -static-intel'
+export CPP='icc -E'
+export CXXCPP='icpc -E'
 
 #netcdf
 if [ ! -s "/usr/local/NETCDF-4.4/include/netcdf.inc" ]; then
