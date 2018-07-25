@@ -245,8 +245,8 @@ if [ $all_flag -eq 2 ];then
     ls -d ~/WPS --color=auto
     ls -d ~/WRF --color=auto
     echo -e "\nClean"
-    rm ~/src-wrf -r
-    rm ~/log-wrf -r
+    sudo rm ~/src-wrf -r
+    sudo rm ~/log-wrf -r
     echo -e "\nEnjoy it\n"
 else
     echo -e "\nInstall ${red}failed${plain}，please check errors\n"
