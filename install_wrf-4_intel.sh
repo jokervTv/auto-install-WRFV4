@@ -191,6 +191,7 @@ if [ $flag -ne 4 ];then
     cd ..
     echo -e "\nConfigure WRF: 33.(smpar) GNU(gfortran/gcc)"
     echo '14\n1' | ./configure >/dev/null
+    sed -i 's/-openmp/-qopenmp/g' ./configure.wps
     echo -e "\nCompile WRF"
     ./compile em_real &> ~/log-wrf/WRFV4_em_real.log
     flag=0
