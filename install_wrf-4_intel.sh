@@ -68,6 +68,21 @@ if [ ! -s ~/.bashrc.wrf.bak ];then
     cp ~/.bashrc ~/.bashrc.wrf.bak.tmp
 fi
 
+
+#jasper
+if [ ! -s "/usr/local/jasper-1.900.1/lib/libjasper.a" ]; then
+    _install jasper-1.900.1
+    if [ ! -s ~/.bashrc.wrf.bak ];then
+        echo '' >> ~/.bashrc
+        echo '#set JASPER' >> ~/.bashrc
+        echo 'export JASPER=/usr/local/jasper-1.900.1' >> ~/.bashrc
+        echo 'export JASPERLIB=/usr/local/jasper-1.900.1/lib' >> ~/.bashrc
+        echo 'export JASPERINC=/usr/local/jasper-1.900.1/include' >> ~/.bashrc
+        echo 'export LD_LIBRARY_PATH=/usr/local/jasper-1.900.1/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
+        source ~/.bashrc
+    fi
+fi
+
 #zlib
 if [ ! -s "/usr/local/zlib-1.2.11/lib/libz.a" ]; then
     export CC=icc
@@ -81,28 +96,6 @@ if [ ! -s "/usr/local/zlib-1.2.11/lib/libz.a" ]; then
     fi
 fi
 
-
-#jasper
-if [ ! -s "/usr/local/jasper-1.900.1/lib/libjasper.a" ]; then
-    export CC=icc
-    export CXX=icpc
-    export FC=ifort
-    export CFLAGS='-O3 -xHost -ip'
-    export CXXFLAGS='-O3 -xHost -ip'
-    export FCFLAGS='-O3 -xHost -ip'
-    _install jasper-1.900.1
-    if [ ! -s ~/.bashrc.wrf.bak ];then
-        echo '' >> ~/.bashrc
-        echo '#set JASPER' >> ~/.bashrc
-        echo 'export JASPER=/usr/local/jasper-1.900.1' >> ~/.bashrc
-        echo 'export JASPERLIB=/usr/local/jasper-1.900.1/lib' >> ~/.bashrc
-        echo 'export JASPERINC=/usr/local/jasper-1.900.1/include' >> ~/.bashrc
-        echo 'export LD_LIBRARY_PATH=/usr/local/jasper-1.900.1/lib:$LD_LIBRARY_PATH' >> ~/.bashrc
-        source ~/.bashrc
-    fi
-fi
-
-
 #hdf5
 if [ ! -s "/usr/local/hdf5-1.10.2/lib/libhdf5.a" ]; then
     export LDFLAGS=-L/usr/local/zlib-1.2.11/lib
@@ -110,6 +103,12 @@ if [ ! -s "/usr/local/hdf5-1.10.2/lib/libhdf5.a" ]; then
     export CC=icc
     export F9X=ifort
     export CXX=icpc
+    export CC=icc
+    export CXX=icpc
+    export FC=ifort
+    export CFLAGS='-O3 -xHost -ip'
+    export CXXFLAGS='-O3 -xHost -ip'
+    export FCFLAGS='-O3 -xHost -ip'
     _install hdf5-1.10.2
     sudo make check-install &> ~/log-wrf/hdf5-1.10.2.CheckInstall.log
     if [ ! -s ~/.bashrc.wrf.bak ];then
