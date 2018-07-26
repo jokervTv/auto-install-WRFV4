@@ -70,6 +70,8 @@ fi
 
 #zlib
 if [ ! -s "/usr/local/zlib-1.2.11/lib/libz.a" ]; then
+    export CC=icc
+    export CFLAGS='-O3 -xHost -ip'
     _install zlib-1.2.11
     if [ ! -s ~/.bashrc.wrf.bak ];then
         echo '' >> ~/.bashrc
@@ -82,6 +84,12 @@ fi
 
 #jasper
 if [ ! -s "/usr/local/jasper-1.900.1/lib/libjasper.a" ]; then
+    export CC=icc
+    export CXX=icpc
+    export FC=ifort
+    export CFLAGS='-O3 -xHost -ip'
+    export CXXFLAGS='-O3 -xHost -ip'
+    export FCFLAGS='-O3 -xHost -ip'
     _install jasper-1.900.1
     if [ ! -s ~/.bashrc.wrf.bak ];then
         echo '' >> ~/.bashrc
@@ -99,6 +107,9 @@ fi
 if [ ! -s "/usr/local/hdf5-1.10.2/lib/libhdf5.a" ]; then
     export LDFLAGS=-L/usr/local/zlib-1.2.11/lib
     export CPPFLAGS=-I/usr/local/zlib-1.2.11/include
+    export CC=icc
+    export F9X=ifort
+    export CXX=icpc
     _install hdf5-1.10.2
     sudo make check-install &> ~/log-wrf/hdf5-1.10.2.CheckInstall.log
     if [ ! -s ~/.bashrc.wrf.bak ];then
