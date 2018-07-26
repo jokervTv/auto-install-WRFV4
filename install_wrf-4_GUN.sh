@@ -1,6 +1,6 @@
 #!/bin/bash
 #if you have any questions, Send a email to z1099135632@163.com.
-#Start by "wget https://code.aliyun.com/z1099135632/WRFV4-install/raw/master/install_wrf-4.sh && chmod 777 ./install_wrf-4.sh && ./install_wrf-4.sh".
+#Start by "wget https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/install_wrf-4_GUN.sh && chmod 777 ./install_wrf-4.sh && ./install_wrf-4.sh".
 
 
 _install () {
