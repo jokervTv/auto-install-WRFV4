@@ -110,7 +110,6 @@ if [ ! -s "/usr/local/hdf5-1.10.2/lib/libhdf5.a" ]; then
     export CXXFLAGS='-O3 -xHost -ip'
     export FCFLAGS='-O3 -xHost -ip'
     _install hdf5-1.10.2
-    sudo make check-install &> ~/log-wrf/hdf5-1.10.2.CheckInstall.log
     if [ ! -s ~/.bashrc.wrf.bak ];then
         echo '' >> ~/.bashrc
         echo '#for hdf5-1.10.2' >> ~/.bashrc
@@ -134,7 +133,7 @@ export CXXCPP='icpc -E'
 if [ ! -s "/usr/local/NETCDF-4.4/include/netcdf.inc" ]; then
     export CPPFLAGS=-I/usr/local/hdf5-1.10.2/include
     export LDFLAGS=-L/usr/local/hdf5-1.10.2/lib
-    export LD_LIBRARY_PATH=$/usr/local/hdf5-1.10.2/lib
+    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/hdf5-1.10.2/lib
     _install netcdf-4.4.1
 
     export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/NETCDF-4.4/lib

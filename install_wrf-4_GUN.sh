@@ -114,7 +114,7 @@ fi
 if [ ! -s "/usr/local/NETCDF-4.4/include/netcdf.inc" ]; then
     export CPPFLAGS=-I/usr/local/hdf5-1.10.2/include
     export LDFLAGS=-L/usr/local/hdf5-1.10.2/lib
-    export LD_LIBRARY_PATH=$/usr/local/hdf5-1.10.2/lib
+    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}/usr/local/hdf5-1.10.2/lib
     _install netcdf-4.4.1
 
     export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/NETCDF-4.4/lib
