@@ -19,7 +19,7 @@ _install () {
         ./configure --prefix=/usr/local/hdf5-1.10.2 --with-zlib=/usr/local/zlib-1.2.11 >/dev/null
         make -j4 >/dev/null 2>~/log-wrf/$1.make.log
     elif [ "$1" == "netcdf-4.4.1" ]; then
-        ./configure --prefix=/usr/local/NETCDF-4.4 --enable-netcdf-4 >/dev/null
+        ./configure --prefix=/usr/local/NETCDF-4.4 --disable-netcdf-4 >/dev/null
         make -j4 >/dev/null 2>~/log-wrf/$1.make.log
     elif [ "$1" == "netcdf-fortran-4.4.4" ]; then
         ./configure FC=ifort --prefix=/usr/local/NETCDF-4.4 >/dev/null
