@@ -50,6 +50,7 @@ echo -e "\nInstall glibc grib2 jpeg8 libpng16 perl curl"
 sudo apt-get install -y glibc* libgrib2c0d libgrib2c-dev libjpeg8* libpng16* perl curl >/dev/null
 sudo apt-get install -y libpng-tools >/dev/null
 sudo apt-get install -y libpng-devel >/dev/null
+sudo apt-get install -y libpng-dev >/dev/null
 echo -e "\nInstall tcsh samba cpp m4 quota"
 sudo apt-get install -y tcsh samba cpp m4 quota >/dev/null
 echo -e "\nInstall gcc g++ gfortran"
