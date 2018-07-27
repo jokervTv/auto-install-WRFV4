@@ -185,6 +185,7 @@ if [ $flag -ne 4 ];then
     export NETCDF=/usr/local/NETCDF-4.4
     export WRFIO_NCD_LARGE_FILE_SUPPORT=1
     export J="-j 4"
+    ulimit -s unlimited 
     cd arch
     echo -e "\nReplace config file"
     wget -c https://code.aliyun.com/z1099135632/wrf-3.9.1.1/raw/master/data/Config_new.pl
