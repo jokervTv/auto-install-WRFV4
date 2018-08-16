@@ -82,7 +82,7 @@ rm ./libssl1.1_1.1*
 
 #本地环境变量修改
 if [ ! -s "~/.ncl.bashrc.bak" ]; then
-    mv ~/.bashrc ~/.ncl.bashrc.bak
+    cp ~/.bashrc ~/.ncl.bashrc.bak
     echo "" >> ~/.bashrc
     echo "#for NCL" >> ~/.bashrc
     echo "export NCARG_ROOT=$ncldir" >> ~/.bashrc
