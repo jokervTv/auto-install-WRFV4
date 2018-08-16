@@ -103,10 +103,6 @@ if [ ! -s "./ncl_ncarg*" ]; then
         wget -c "$debian_url"
     fi
     tar -xf ncl_ncarg*.tar.gz
-    rm ncl_ncarg*
-    echo "|||--------------------|||"
-    echo "||    清理 NCL 安装包    ||"
-    echo "|||--------------------|||"
 else
     tar -xf ncl_ncarg* -C $ncl_ncarg/
 fi
@@ -115,6 +111,8 @@ fi
 version=`ncl -V`
 if [ version = "$version_ncl" ]; then
     echo -e "\n\n${green}安装成功${plain}\n\n"
+    rm ncl_ncarg*
 else
     echo -e "\n\n${red}安装失败${plain}，请删除环境变量及~/.ncl.bashrc.bak\n\n"
+    echo -e "ncl安装包位于 $ncldir/"
 fi
