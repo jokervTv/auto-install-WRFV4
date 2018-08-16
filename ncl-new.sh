@@ -113,6 +113,7 @@ if [ version = "$version_ncl" ]; then
     echo -e "\n\n${green}安装成功${plain}\n\n"
     rm ncl_ncarg*
 else
-    echo -e "\n\n${red}安装失败${plain}，请删除环境变量及~/.ncl.bashrc.bak\n\n"
+    echo -e "\n\n${red}安装失败${plain}，请删除环境变量\n\n"
+    mv ~/.ncl.bashrc.bak ~/.bashrc
     echo -e "ncl安装包位于 $ncldir/"
 fi
