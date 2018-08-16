@@ -1,6 +1,7 @@
 #!/bin/bash
 #if you have any questions, Send a email to z1099135632@163.com.
-#Start by "wget https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/install_wrf-4_GUN_EnableNetCDF4.sh && chmod 777 ./install_wrf-4.sh && ./install_wrf-4.sh".
+#Start by
+#wget https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/install_wrf-4_GUN_EnableNetCDF4.sh && chmod 777 ./install_wrf-4.sh && ./install_wrf-4.sh
 
 
 _install () {
