@@ -5,7 +5,7 @@
 
 clear
 
-version_ncl ="6.5.0"
+version_ncl="6.5.0"
 usr_libssl_ubuntu="http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4.1_amd64.deb"
 usr_libssl_debian="http://ftp.cn.debian.org/debian/pool/main/o/openssl/libssl1.1_1.1.0f-3+deb9u2_amd64.deb"
 contos_url="https://www.earthsystemgrid.org/dataset/ncl.640.dap/file/ncl_ncarg-6.5.0-CentOS7.3_64bit_gnu485.tar.gz"
