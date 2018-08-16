@@ -93,7 +93,7 @@ fi
 
 #NCL
 mkdir $ncldir
-if [ ! -s "./ncl_ncarg*" ]; then
+if [ ! -s "`ls ncl_ncarg*`" ]; then
     echo "||   下载 NCL 安装包    ||"
     echo "|||--------------------|||"
     cd $ncldir
