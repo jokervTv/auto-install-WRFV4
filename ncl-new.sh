@@ -108,6 +108,7 @@ else
 fi
 
 #检验安装是否成功
+source ~/.bashrc
 version=`ncl -V`
 if [ version = "$version_ncl" ]; then
     echo -e "\n\n${green}安装成功${plain}\n\n"
