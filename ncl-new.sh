@@ -1,7 +1,7 @@
 #!/bin/bash
 #if you have any questions, Send a email to z1099135632@163.com.
 #Start by
-#wget https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/ncl-new.sh && chmod 777 ./ncl-new.sh && ./ncl-new.sh
+#wget https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/ncl-new.sh && sudo chmod 777 ./ncl-new.sh && sudo ./ncl-new.sh
 
 clear
 
