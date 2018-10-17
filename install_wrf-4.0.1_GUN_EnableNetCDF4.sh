@@ -187,6 +187,7 @@ if [ $flag -ne 4 ];then
         tar -xf WRF-4.0.1.tar.gz
     fi
     cd WRF-4.0.1
+    ls
     echo -e "\nClean"
     ./clean -a &>/dev/null
     export JASPERLIB=/usr/local/jasper-1.900.1/lib
