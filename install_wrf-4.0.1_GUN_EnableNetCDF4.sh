@@ -144,7 +144,7 @@ if [ ! -s "/usr/local/bison-3.1/bin/bison" ]; then
 fi
 
 #flex
-if [ ! -s "/usr/local/bison-3.1/bin/bison" ]; then
+if [ ! -s "/usr/local/flex-2.5.3/bin/flex" ]; then
     _install flex-2.5.3
     echo '' >> ~/.bashrc
     echo '#for flex-2.5.3' >> ~/.bashrc
