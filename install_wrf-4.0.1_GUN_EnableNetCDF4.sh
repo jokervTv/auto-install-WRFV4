@@ -179,6 +179,7 @@ if [ $flag -ne 4 ];then
         if [ ! -s ~/WRF-4.0.1.tar.gz ];then
         echo -e "\nDownload WRF"
         wget -c https://github.com/wrf-model/WRF/archive/v4.0.1.tar.gz
+        mv ./v4.0.1.tar.gz ./WRF-4.0.1.tar.gz
         fi
         echo -e "\nExtract"
         tar -xf WRF-4.0.1.tar.gz
@@ -234,6 +235,7 @@ if [ $flag -ne 11 ];then
         if [ ! -s ~/WPS-4.0.1.tar.gz ];then
         echo -e "\nDownload WPS"
         wget -c https://github.com/wrf-model/WPS/archive/v4.0.1.tar.gz
+        mv ./v4.0.1.tar.gz ./WRF-4.0.1.tar.gz
         fi
         echo -e "\nExtract"
         tar -xf WPS-4.0.1.tar.gz
