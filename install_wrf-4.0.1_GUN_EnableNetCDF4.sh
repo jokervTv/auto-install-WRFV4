@@ -187,7 +187,6 @@ if [ $flag -ne 4 ];then
         tar -xf WRF-4.0.1.tar.gz
     fi
     cd WRF-4.0.1
-    ls
     echo -e "\nClean"
     ./clean -a &>/dev/null
     export JASPERLIB=/usr/local/jasper-1.900.1/lib
@@ -199,7 +198,7 @@ if [ $flag -ne 4 ];then
 #    cd arch
 #   echo -e "\nReplace config file"
 #   wget -c https://code.aliyun.com/z1099135632/wrf-3.9.1.1/raw/master/data/Config_new.pl
-    cd ..
+#    cd ..
     echo -e "\nConfigure WRF: 33.(smpar) GNU(gfortran/gcc)"
     echo '33\n1' | ./configure >/dev/null
     echo -e "\nCompile WRF"
