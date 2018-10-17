@@ -140,6 +140,7 @@ if [ ! -s "/usr/local/bison-3.1/bin/bison" ]; then
     echo 'export PATH=/usr/local/bison-3.1/bin:$PATH' >> ~/.bashrc
     echo 'export PATH=/usr/local/bison-3.1:$PATH' >> ~/.bashrc
     echo "export YACC='yacc -d'" >> ~/.bashrc
+    source ~/.bashrc
 fi
 
 #flex
@@ -150,6 +151,7 @@ if [ ! -s "/usr/local/bison-3.1/bin/bison" ]; then
     echo 'export PATH=/usr/local/flex-2.5.3/bin:$PATH' >> ~/.bashrc
     echo 'export FLEX=/usr/local/flex-2.5.3/bin/flex' >> ~/.bashrc
     echo "export FLEX_LIB_DIR=/usr/local/flex-2.5.3/lib" >> ~/.bashrc
+    source ~/.bashrc
 fi
 
 
