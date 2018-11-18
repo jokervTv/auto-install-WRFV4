@@ -45,8 +45,8 @@ _check (){
 }
 
 #安装必要组件
-echo -e "\nUpdate"
-sudo apt-get update >/dev/null
+#echo -e "\nUpdate"
+#sudo apt-get update >/dev/null
 echo -e "\nInstall glibc grib2 jpeg8 libpng16 perl curl"
 sudo apt-get install -y glibc* libgrib2c0d libgrib2c-dev libjpeg8* libpng16* perl curl >/dev/null
 sudo apt-get install -y libpng-tools &>/dev/null
