@@ -170,11 +170,10 @@ if [ $flag -ne 4 ];then
     export J="-j 4"
     ulimit -s unlimited
     cd arch
-    echo -e "\nReplace config file"
-    wget -c https://code.aliyun.com/z1099135632/wrf-3.9.1.1/raw/master/data/Config_new.pl
     cd ..
     echo -e "\nConfigure WRF: 33.(smpar) GNU(gfortran/gcc)"
     echo '33\n1' | ./configure >/dev/null
+    sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wrf
     echo -e "\nCompile WRF"
     ./compile em_real &> ~/log-wrf/WRFV4_em_real.log
     flag=0
