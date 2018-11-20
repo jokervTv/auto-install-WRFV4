@@ -61,7 +61,7 @@ echo "||  当前系统：$os_release   ||"
 #安装必备依赖项
 echo "||      安装 依赖       ||"
 echo "|||--------------------|||"
-$sys_package update
+#$sys_package update
 if [ $os_release == "centos" ]; then
     $sys_package -y --force-yes install -y wget tcsh libbz2-dev wget xorg-dev libx11-dev gfortran x11-dev >/dev/null
 else
