@@ -6,10 +6,12 @@
 clear
 
 version_ncl="6.5.0"
-usr_libssl_ubuntu="http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1-1ubuntu2_amd64.deb"
-usr_libssl_debian="http://mirrors.ustc.edu.cn/debian/pool/main/o/openssl/libssl1.1_1.1.0j-1~deb9u1_amd64.deb"
+usr_libssl_ubuntu="https://github.com/jokervTv/auto-install-WRFV4/raw/master/libssl/libssl1.1_1.1.1-1ubuntu2_amd64.deb"
+usr_libssl_debian="https://github.com/jokervTv/auto-install-WRFV4/raw/master/libssl/libssl1.1_1.1.0j-1_deb9u1_amd64.deb"
 contos_url="https://www.earthsystemgrid.org/dataset/ncl.650.dap/file/ncl_ncarg-6.5.0-CentOS7.5_64bit_gnu485.tar.gz"
-debian_url="https://www.earthsystemgrid.org/dataset/ncl.650.dap/file/ncl_ncarg-6.5.0-Debian9.4_64bit_gnu630.tar.gz"
+debian_url_original="https://www.earthsystemgrid.org/dataset/ncl.650.dap/file/ncl_ncarg-6.5.0-Debian9.4_64bit_gnu630.tar.gz"
+debian_url_china="https://gitee.com/jokervTv/NCL/raw/master/data/ncl_ncarg-6.5.0-Debian9.4_64bit_gnu630.7z"
+debian_url = debian_url_china
 
 #检查管理员权限
 [[ $EUID -ne 0 ]] && echo -e "[${red}Error${plain}] 请使用${red}管理员权限${plain}运行此脚本!" && exit 1
