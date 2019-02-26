@@ -14,6 +14,8 @@ debian_url="https://www.earthsystemgrid.org/dataset/ncl.650.dap/file/ncl_ncarg-6
 #检查管理员权限
 [[ $EUID -ne 0 ]] && echo -e "[${red}Error${plain}] 请使用${red}管理员权限${plain}运行此脚本!" && exit 1
 
+echo "||  若当前目录下无ncl分发包, 将从官方地址下载 "
+
 #选择安装目录
 DEncldir="$HOME/NCL"
 echo "请手动输入 NCL 安装目录(默认配置可直接回车)："
