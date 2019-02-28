@@ -67,9 +67,9 @@ echo "||      安装 依赖       ||"
 echo "|||--------------------|||"
 #$sys_package update
 if [ $os_release == "centos" ]; then
-    $sys_package -y --force-yes install -y wget tcsh libbz2-dev xorg-dev libx11-dev gfortran x11-dev >/dev/null
+    $sys_package -y --force-yes install -y wget p7zip tcsh libbz2-dev xorg-dev libx11-dev gfortran x11-dev >/dev/null
 else
-    $sys_package -y --force-yes install -y wget tcsh libxrender1 libfontconfig1 libxext6 libgfortran3 libgomp1 >/dev/null #libbz2-dev wget libX11-devel cairo-devel gcc-gfortran libxrender1
+    $sys_package -y --force-yes install -y wget p7zip tcsh libxrender1 libfontconfig1 libxext6 libgfortran3 libgomp1 >/dev/null #libbz2-dev wget libX11-devel cairo-devel gcc-gfortran libxrender1
 fi
 
 if [ $os_release == "ubuntu" ]; then
@@ -106,7 +106,7 @@ if [ ! -s "`ls ncl_ncarg*`" ]; then
     else
         wget -c "$debian_url"
     fi
-    tar -xf ncl_ncarg*.tar.gz
+    7zr -x ncl_ncarg*.7z -o$ncldir > /dev/null
 else
     tar -xf ncl_ncarg* -C $ncl_ncarg/
 fi
