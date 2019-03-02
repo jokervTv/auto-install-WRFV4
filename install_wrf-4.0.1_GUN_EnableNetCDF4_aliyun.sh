@@ -1,7 +1,7 @@
 #!/bin/bash
 #if you have any questions, Send a email to z1099135632@163.com.
 #Start by
-#wget https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/install_wrf-4.0.1_GUN_EnableNetCDF4_aliyun.sh && chmod 777 ./install_wrf-4.0.1_GUN_EnableNetCDF4.sh && ./install_wrf-4.0.1_GUN_EnableNetCDF4.sh
+#wget https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/install_wrf-4.0.1_GUN_EnableNetCDF4_aliyun.sh && chmod 777 ./install_wrf-4.0.1_GUN_EnableNetCDF4_aliyun.sh && ./install_wrf-4.0.1_GUN_EnableNetCDF4_aliyun.sh
 
 
 _install () {
