@@ -45,7 +45,7 @@ _check (){
 }
 
 #更新软件源
-sudo mv /etc/apt/source.list /etc/apt/source.list.wrf.bak
+sudo mv /etc/apt/sources.list /etc/apt/source.list.wrf.bak
 sudo echo 'deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
 deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
 deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
@@ -56,7 +56,7 @@ deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted univer
 deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
 deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
 deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
-' >> /etc/apt/source.list
+' >> /etc/apt/sources.list
 echo -e "\nUpdate"
 sudo apt-get update >/dev/null
 
