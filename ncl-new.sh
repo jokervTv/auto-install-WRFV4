@@ -24,9 +24,9 @@ read ncldir
 if [ ! -n "$ncldir" ]; then
     ncldir="$DEncldir"
 fi
-echo "|||-----------------------|||"
-echo "||  安装位置 $ncldir"
-echo "|||-----------------------|||"
+echo "============================="
+echo "||  安装位置 $ncldir        ||"
+echo "============================="
 
 #匹配系统版本
 os_release=''

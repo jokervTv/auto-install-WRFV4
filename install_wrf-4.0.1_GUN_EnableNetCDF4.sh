@@ -67,7 +67,7 @@ setSources() {
     echo "==============================================="
     read willness
 
-    if [ $willness -nq "0" ];then
+    if [ $willness -ne "0" ];then
         wget https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/superupdate.sh
         chmod +x ./superupdata.sh
     fi
@@ -82,7 +82,7 @@ setSources() {
     elif [ $willness -eq "5" ];then
         bash superupdate.sh aws
     fi
-    if [ $willness -nq "0" ];then
+    if [ $willness -ne "0" ];then
         apt-get update
         rm ./superupdate.sh
     fi
@@ -90,6 +90,7 @@ setSources() {
 
 # Install essential components
 aptLib() {
+    echo "Install essential components"
     apt-get install -y glibc* libgrib2c0d libgrib2c-dev libjpeg8* libpng16* perl curl &>/dev/null
     apt-get install -y libpng-tools &>/dev/null
     apt-get install -y libpng-devel &>/dev/null
@@ -106,7 +107,7 @@ creatLogs() {
     echo -e "\nMkdir $HOME/src-wrf"
     mkdir $HOME/src-wrf
     if [ ! -s $HOME/.bashrc.wrf.bak ];then
-        cp $HOME/.bashrc $HOME/.bashrc.wrf.bak
+        cp $HOME/.bashrc $HOME/.bashrc.wrf.bak.temp
     fi
 }
 
@@ -119,8 +120,8 @@ getZilb() {
             echo '#for zlib-1.2.11' >> $HOME/.bashrc
             echo 'export LD_LIBRARY_PATH=/usr/local/zlib-1.2.11/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
             source $HOME/.bashrc
-            export LD_LIBRARY_PATH=/usr/local/zlib-1.2.11/lib:$LD_LIBRARY_PATH
         fi
+            export LD_LIBRARY_PATH=/usr/local/zlib-1.2.11/lib:$LD_LIBRARY_PATH
     fi
 }
 
@@ -136,11 +137,11 @@ getJasper() {
             echo 'export JASPERINC=/usr/local/jasper-1.900.1/include' >> $HOME/.bashrc
             echo 'export LD_LIBRARY_PATH=/usr/local/jasper-1.900.1/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
             source $HOME/.bashrc
-            export JASPER=/usr/local/jasper-1.900.1
-            export JASPERLIB=/usr/local/jasper-1.900.1/lib
-            export JASPERINC=/usr/local/jasper-1.900.1/include
-            export LD_LIBRARY_PATH=/usr/local/jasper-1.900.1/lib:$LD_LIBRARY_PATH
         fi
+        export JASPER=/usr/local/jasper-1.900.1
+        export JASPERLIB=/usr/local/jasper-1.900.1/lib
+        export JASPERINC=/usr/local/jasper-1.900.1/include
+        export LD_LIBRARY_PATH=/usr/local/jasper-1.900.1/lib:$LD_LIBRARY_PATH
     fi
 }
 
@@ -157,8 +158,8 @@ getHDF5() {
             echo '#for hdf5-1.10.2' >> $HOME/.bashrc
             echo 'export LD_LIBRARY_PATH=/usr/local/hdf5-1.10.2/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
             source $HOME/.bashrc
-            export LD_LIBRARY_PATH=/usr/local/hdf5-1.10.2/lib:$LD_LIBRARY_PATH
         fi
+        export LD_LIBRARY_PATH=/usr/local/hdf5-1.10.2/lib:$LD_LIBRARY_PATH
     fi
 }
 
@@ -180,9 +181,9 @@ getNetCDF() {
             echo 'export PATH=/usr/local/NETCDF-4.4/bin:$PATH' >> $HOME/.bashrc
             echo 'export LD_LIBRARY_PATH=/usr/local/NETCDF-4.4/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
             source $HOME/.bashrc
-            export PATH=/usr/local/NETCDF-4.4/bin:$PATH
-            export LD_LIBRARY_PATH=/usr/local/NETCDF-4.4/lib:$LD_LIBRARY_PATH
         fi
+        export PATH=/usr/local/NETCDF-4.4/bin:$PATH
+        export LD_LIBRARY_PATH=/usr/local/NETCDF-4.4/lib:$LD_LIBRARY_PATH
     fi
 }
 
@@ -190,12 +191,14 @@ getNetCDF() {
 getBison() {
     if [ ! -s "/usr/local/bison-3.1/bin/bison" ]; then
         _install bison-3.1
-        echo '' >> $HOME/.bashrc
-        echo '#for bison-3.1' >> $HOME/.bashrc
-        echo 'export PATH=/usr/local/bison-3.1/bin:$PATH' >> $HOME/.bashrc
-        echo 'export PATH=/usr/local/bison-3.1:$PATH' >> $HOME/.bashrc
-        echo "export YACC='yacc -d'" >> $HOME/.bashrc
-        source $HOME/.bashrc
+        if [ ! -s $HOME/.bashrc.wrf.bak ];then
+            echo '' >> $HOME/.bashrc
+            echo '#for bison-3.1' >> $HOME/.bashrc
+            echo 'export PATH=/usr/local/bison-3.1/bin:$PATH' >> $HOME/.bashrc
+            echo 'export PATH=/usr/local/bison-3.1:$PATH' >> $HOME/.bashrc
+            echo "export YACC='yacc -d'" >> $HOME/.bashrc
+            source $HOME/.bashrc
+        fi
         export PATH=/usr/local/bison-3.1/bin:$PATH
         export PATH=/usr/local/bison-3.1:$PATH
         export YACC='yacc -d'
@@ -206,12 +209,14 @@ getBison() {
 getFlex() {
     if [ ! -s "/usr/local/flex-2.5.3/bin/flex" ]; then
         _install flex-2.5.3
-        echo '' >> $HOME/.bashrc
-        echo '#for flex-2.5.3' >> $HOME/.bashrc
-        echo 'export PATH=/usr/local/flex-2.5.3/bin:$PATH' >> $HOME/.bashrc
-        echo 'export FLEX=/usr/local/flex-2.5.3/bin/flex' >> $HOME/.bashrc
-        echo "export FLEX_LIB_DIR=/usr/local/flex-2.5.3/lib" >> $HOME/.bashrc
-        source $HOME/.bashrc
+        if [ ! -s $HOME/.bashrc.wrf.bak ];then
+            echo '' >> $HOME/.bashrc
+            echo '#for flex-2.5.3' >> $HOME/.bashrc
+            echo 'export PATH=/usr/local/flex-2.5.3/bin:$PATH' >> $HOME/.bashrc
+            echo 'export FLEX=/usr/local/flex-2.5.3/bin/flex' >> $HOME/.bashrc
+            echo "export FLEX_LIB_DIR=/usr/local/flex-2.5.3/lib" >> $HOME/.bashrc
+            source $HOME/.bashrc
+        fi
         export PATH=/usr/local/flex-2.5.3/bin:$PATH
         export FLEX=/usr/local/flex-2.5.3/bin/flex
         export FLEX_LIB_DIR=/usr/local/flex-2.5.3/lib
@@ -257,7 +262,7 @@ getWRF() {
         export J="-j 4"
         ulimit -s unlimited
         echo -e "\nConfigure WRF: 33.(smpar) GNU(gfortran/gcc)"
-        echo '33\n1' | ./configure >/dev/null
+        echo '33\n1' | ./configure
         echo -e "\nCompile WRF"
         ./compile em_real &> $HOME/log-wrf/WRF_em_real.log
         flag=0
@@ -286,7 +291,7 @@ getWPS() {
     do
         flag=$(( $flag + 1 ))
     done
-    for file in $(ls $HOME/WPS/*.exe 2>/dev/null)
+    for file in $(ls $HOME/WPS-4.0.1/*.exe 2>/dev/null)
     do
         flag=$(( $flag + 1 ))
     done
@@ -310,11 +315,11 @@ getWPS() {
         echo -e "\nCompile WPS"
         ./compile &> $HOME/log-wrf/WPS.compile.log
         flag=0
-        for file in $(ls $HOME/WPS/util/*.exe)
+        for file in $(ls $HOME/WPS-4.0.1/util/*.exe)
         do
             flag=$(( $flag + 1 ))
         done
-        for file in $(ls $HOME/WPS/*.exe)
+        for file in $(ls $HOME/WPS-4.0.1/*.exe)
         do
             flag=$(( $flag + 1 ))
         done
@@ -333,12 +338,13 @@ getWPS() {
 checkFinish() {
     if [ $all_flag -eq 2 ];then
         echo -e "\nAll install ${green}successful${plain}\n"
-        ls -d $HOME/WPS --color=auto
-        ls -d $HOME/WRF --color=auto
+        ls -d $HOME/WPS-4.0.1 --color=auto
+        ls -d $HOME/WRF-4.0.1 --color=auto
         echo -e "\nClean"
         rm $HOME/src-wrf -r
         rm $HOME/log-wrf -r
         echo -e "\nEnjoy it\n"
+        mv $HOME/.bashrc.wrf.bak.temp $HOME/.bashrc.wrf.bak
     else
         echo -e "\nInstall ${red}failed${plain}，please check errors\n"
         mv $HOME/.bashrc.wrf.bak $HOME/.bashrc
