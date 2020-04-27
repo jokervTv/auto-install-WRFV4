@@ -13,22 +13,32 @@ YELLOW='\033[0;33m'
 SKYBLUE='\033[0;36m'
 PLAIN='\033[0m'
 
+getAbout() {
+	echo ""
+	echo " ========================================================= "
+	echo " \                 SuperUpdate.sh  Script                / "
+	echo " \            Choose a faster mirror for Linux           / "
+	echo " \                   Created by Oldking                  / "
+	echo " ========================================================= "
+	echo ""
+	echo " Intro: https://www.oldking.net/697.html"
+	echo " Copyright (C) 2018 Oldking oooldking@gmail.com"
+	echo -e " Version: ${GREEN}1.0.3${PLAIN} (2 Nov 2018)"
+	echo " Usage: wget -qO- git.io/superupdate.sh | bash"
+	echo ""
+}
+
 getHelp(){
 	echo " $( bash superupdate.sh )"
 	echo " - set sources from cdn-fastly "
-
 	echo " $( bash superupdate.sh cn ) "
 	echo " - set sources from USTC "
-
 	echo " $( bash superupdate.sh 163 ) "
 	echo " - set sources from 163.com "
-
 	echo " $( bash superupdate.sh aliyun ) "
 	echo " - set sources from aliyun.com "
-
 	echo " $( bash superupdate.sh aws ) "
 	echo " - set sources from cdn-aws "
-	
 	echo " $( bash superupdate.sh restore ) "
 	echo " - restore sources from backup file "
 }
@@ -162,6 +172,7 @@ restore(){
 }
 
 setSources(){
+	getAbout
 	updateInit
 	case "$release" in
 		debian)
