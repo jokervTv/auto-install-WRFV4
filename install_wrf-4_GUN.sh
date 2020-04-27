@@ -16,13 +16,13 @@ _install () {
     echo -e "\nDelect $1.tar.gz"
     cd ~/src-wrf/$1
     echo -e "\nConfigure & make $1"
-    if [ "$1" == "hdf5-1.10.2" ]; then
+    if [ "$1" -eq "hdf5-1.10.2" ]; then
         ./configure --prefix=/usr/local/hdf5-1.10.2 --with-zlib=/usr/local/zlib-1.2.11 >/dev/null
         make -j4 >/dev/null 2>~/log-wrf/$1.make.log
-    elif [ "$1" == "netcdf-4.4.1" ]; then
+    elif [ "$1" -eq "netcdf-4.4.1" ]; then
         ./configure --prefix=/usr/local/NETCDF-4.4 --disable-netcdf-4 >/dev/null
         make -j4 >/dev/null 2>~/log-wrf/$1.make.log
-    elif [ "$1" == "netcdf-fortran-4.4.4" ]; then
+    elif [ "$1" -eq "netcdf-fortran-4.4.4" ]; then
         ./configure FC=gfortran --prefix=/usr/local/NETCDF-4.4 >/dev/null
         make -j4 >/dev/null 2>~/log-wrf/$1.make.log
     else
