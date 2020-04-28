@@ -150,7 +150,7 @@ setSources() {
     read willness
     if  [ -n "$willness" ] ;then
         if [ $willness -ne "0" ];then
-            wget https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/superupdate.sh
+            wget -nv https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/superupdate.sh
             chmod +x ./superupdata.sh
         fi
         if [ $willness -eq "1" ];then
