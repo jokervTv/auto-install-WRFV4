@@ -87,7 +87,7 @@ checkRoot() {
 
 getDir() {
     echo "========================================================="
-    echo "Please enter the installation directory:"
+    echo "Please enter the library installation directory:"
     echo ""
     echo "(defualt: $LIB_INSTALL_DIR)"
     echo ""
@@ -472,6 +472,7 @@ getWRF() {
 # Install WPS
 getWPS() {
     flag=0
+    export WRF_DIR=$HOME/$WRF_VERSION
     for file in $(ls $HOME/$WPS_VERSION/util/*.exe 2>/dev/null)
     do
         flag=$(( $flag + 1 ))
@@ -522,6 +523,8 @@ getWPS() {
 }
 
 checkFinishWRF() {
+    echo "# END for WRF or MPAS automatic installation" >> $HOME/.bashrc
+    echo "###############################################" >> $HOME/.bashrc
     if [ $WRF_FLAG -eq 2 ];then
         echo -e "\nAll install ${green}successful${plain}\n"
         ls -d $HOME/$WRF_VERSION --color=auto
@@ -533,9 +536,8 @@ checkFinishWRF() {
     else
         echo -e "\nInstall ${red}failed${plain} please check errors\n"
         cp $HOME/.bashrc.autoInstall.bak $HOME/.bashrc
+        rm $HOME/.bashrc.autoInstall.bak
     fi
-    echo "# END for WRF or MPAS automatic installation" >> $HOME/.bashrc
-    echo "###############################################" >> $HOME/.bashrc
 }
 
 getMPAS() {
