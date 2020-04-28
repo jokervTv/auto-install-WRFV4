@@ -212,6 +212,7 @@ aptLib() {
     sudo apt-get -y install tcsh samba cpp m4 quota
     sudo apt-get -y install cmake make wget tar
     sudo apt-get -y install autoconf libtool mpich automake
+    sudo apt-get -y install autopoint gettext
     sudo apt-get -y install libcurl4-openssl-dev libcurl4
     sudo apt-get -y install git
 }
@@ -584,6 +585,7 @@ getInfo
 getDir
 getOpenmp
 #getTest
+getWRFChem
 setSources
 checkInfo
 aptLib
@@ -600,3 +602,4 @@ getPnetCDF  $PNETCDF_VERSION
 getPIO      $PIO_VERSION
 #getMPAS     $MPAS_VERSION
 checkFinishWRF
+restoreSource
