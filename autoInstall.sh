@@ -1,12 +1,11 @@
 #!/bin/bash
 
-# Description: install WPS and WRF with chem.
-# If you have any questions, send a e-mail to zhangyp6603@outlook.com.
+# Author: Yongpeng Zhang - zhangyp6603@outlook.com
+#
+# Description:  install WPS,WRF,WRFDA,WRF-Chem.
+#               If you have any questions, send an e-mail or open an issue.
 # Start by
-# wget https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/autoInstall.sh
-# chmod +x ./autoInstall.sh
-# sudo apt update
-# sudo ./autoInstall.sh
+# wget https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/autoInstall.sh | bash autoInstall.sh
 
 
 # System info
@@ -30,10 +29,11 @@ JASPER_VERSION="jasper-2.0.14"
 HDF5_VERSION="hdf5-1.10.5"
 NETCDF_VERSION="NETCDF-4.7.0"
 NETCDF_FORTRAN_VERSION="netcdf-fortran-4.4.5"
-BISON_VERSION="bison-3.4.1" #http://ftpmirror.gnu.org/bison/
+BISON_VERSION="bison-3.5.4" #http://ftpmirror.gnu.org/bison/
 FLEX_VERSION="flex-2.6.4" #https://github.com/westes/flex
-WRF_VERSION="WRF-4.2" #https://github.com/wrf-model/WRF
 WPS_VERSION="WPS-4.2" #https://github.com/wrf-model/WPS
+WRF_VERSION="WRF-4.2" #https://github.com/wrf-model/WRF
+WRFDA_VERSION="WRFDA-4.2" #https://github.com/wrf-model/WRF
 PIO_VERSION="pio-2.5.0" #https://github.com/NCAR/ParallelIO/
 PNETCDF_VERSION="pnetcdf-1.11.2" #https://github.com/Parallel-NetCDF/PnetCDF
 MPAS_VERSION="MPAS-Model-7.0" #https://github.com/MPAS-Dev/MPAS-Model
@@ -73,9 +73,10 @@ getInfo() {
 	echo " ============================================================== "
 	echo " \                  Autoinstall WRF or MPAS                   / "
     echo " \     URL: https://github.com/jokervTv/auto-install-WRFV4    / "
-    echo " \                 Script Created by JokervTv                 / "
+    echo " \                                                            / "
+    echo " \              Script Created by Yongpeng Zhang              / "
 	echo " \                            and                             / "
-    echo " \        SuperUpdate.sh Script Created by Oldking            / "
+    echo " \              SuperUpdate.sh Created by Oldking             / "
 	echo " ============================================================== "
     echo ""
 }
@@ -205,16 +206,16 @@ aptLib() {
     echo "=========================================================="
     echo -e "\nInstall essential components"
     echo "=========================================================="
-    sudo apt-get -y install glibc* libgrib2c0d libgrib2c-dev libjpeg8* libpng16* perl curl
-    sudo apt-get -y install libpng-tools
-    sudo apt-get -y install libpng-devel
-    sudo apt-get -y install libpng-dev
-    sudo apt-get -y install tcsh samba cpp m4 quota
-    sudo apt-get -y install cmake make wget tar
-    sudo apt-get -y install autoconf libtool mpich automake
-    sudo apt-get -y install autopoint gettext
-    sudo apt-get -y install libcurl4-openssl-dev libcurl4
-    sudo apt-get -y install git
+    sudo apt-get -yqq install glibc* libgrib2c0d libgrib2c-dev libjpeg8* libpng16* perl curl
+    sudo apt-get -yqq install libpng-tools
+    sudo apt-get -yqq install libpng-devel
+    sudo apt-get -yqq install libpng-dev
+    sudo apt-get -yqq install tcsh samba cpp m4 quota
+    sudo apt-get -yqq install cmake make wget tar
+    sudo apt-get -yqq install autoconf libtool mpich automake
+    sudo apt-get -yqq install autopoint gettext
+    sudo apt-get -yqq install libcurl4-openssl-dev libcurl4
+    sudo apt-get -yqq install git
 }
 
 # Creat logs and backupfiles
@@ -470,6 +471,60 @@ getWRF() {
     fi
 }
 
+# Install WRFDA
+getWRFDA() {
+    flag=0
+    for file in $(ls $HOME/$WRFDA_VERSION/var/build/*.exe 2>/dev/null)
+    do
+        flag=$(( $flag + 1 ))
+    done
+    if [ $flag -ne 44 ];then
+        echo "Install WRFDA"
+        if [ ! -s $HOME/$WRF_VERSION/configure ];then
+            if [ ! -s $SRC_DIR/$WRF_VERSION.tar.gz ];then
+                wgetSource $1
+                cd $HOME && mv $SRC_DIR/$WRF_VERSION $HOME/$WRFDA_VERSION
+            fi
+        fi
+        cd $HOME/$1
+        echo " ============================================================== "
+        echo -e "\nClean\n"
+        ./clean -a &>/dev/null
+        ulimit -s unlimited
+        echo " ============================================================== "
+        echo -e "\nConfigure wrfplus: 17. (serial)   GNU (gfortran/gcc)"
+        echo '17' | ./configure wrfplus
+        echo " ============================================================== "
+        echo -e "\nCompile wrfplus"
+        sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wrf
+        sed -i '999s/REAL, INTENT(IN)/REAL(8), INTENT(IN)/' external/io_int/module_internal_header_util.f
+        ./compile $WRF_WPS_OPENMP wrfplus &> $LOG_DIR/WRFDA_wrfplus_compile.log
+        export WRFPLUS_DIR=$HOME/$1/WRFPLUS
+        echo "WRFPLUS_DIR=$HOME/$1/WRFPLUS" >> $HOME/.bashrc
+        echo " ============================================================== "
+        echo -e "\nConfigure WRFDA: 33. (smpar)   GNU (gfortran/gcc)"
+        ./configure 4dvar
+        echo -e "\nCompile WRFDA with wrfplus"
+        ./compile $WRF_WPS_OPENMP all_wrfvar >& $LOG_DIR/WRFDA_compile.log
+        flag=0
+        WRF_FLAG=0
+        for file in $(ls $HOME/$WRFDA_VERSION/var/build/*.exe)
+        do
+            flag=$(( $flag + 1 ))
+        done
+        if [ $flag -eq 44 ];then
+            echo -e "\n\nWRFDA install ${green}successful${plain}\n"
+            WRF_FLAG=$(( $WRF_FLAG + 1 ))
+        else
+            echo -e "\nInstall WRF ${red}failed${plain} please check errors in logs($LOG_DIR/)\n"
+            exit 1
+        fi
+    else
+        echo -e "\nWRFDA has been installed\n"
+        WRF_FLAG=$(( $WRF_FLAG + 1 ))
+    fi
+}
+
 # Install WPS
 getWPS() {
     flag=0
@@ -515,7 +570,7 @@ getWPS() {
             echo -e "\n\nWPS install ${green}successful${plain}\n"
             WRF_FLAG=$(( $WRF_FLAG + 1 ))
         else
-            echo -e "Install WPS ${red}failed${plain}Ã¯Â¼Å’please check errors in logs($LOG_DIR/)\n"
+            echo -e "Install WPS ${red}failed${plain}, please check errors in logs($LOG_DIR/)\n"
         fi
     else
         echo -e "\nWPS already installed\n"
@@ -526,10 +581,11 @@ getWPS() {
 checkFinishWRF() {
     echo "# END for WRF or MPAS automatic installation" >> $HOME/.bashrc
     echo "###############################################" >> $HOME/.bashrc
-    if [ $WRF_FLAG -eq 2 ];then
+    if [ $WRF_FLAG -eq 3 ];then
         echo -e "\nAll install ${green}successful${plain}\n"
-        ls -d $HOME/$WRF_VERSION --color=auto
         ls -d $HOME/$WPS_VERSION --color=auto
+        ls -d $HOME/$WRF_VERSION --color=auto
+        ls -d $HOME/$WRFDA_VERSION --color=auto
         echo -e "\nClean"
         sudo rm $SRC_DIR -r
         sudo rm $LOG_DIR -r
@@ -590,14 +646,15 @@ setSources
 checkInfo
 aptLib
 creatLogs
-getZilb    $ZLIB_VERSION
-getJasper  $JASPER_VERSION
-getHDF5    $HDF5_VERSION
-getNetCDF  $NETCDF_VERSION $NETCDF_FORTRAN_VERSION
-getBison   $BISON_VERSION
-getFlex    $FLEX_VERSION
-getWRF     $WRF_VERSION
-getWPS     $WPS_VERSION
+getZilb     $ZLIB_VERSION
+getJasper   $JASPER_VERSION
+getHDF5     $HDF5_VERSION
+getNetCDF   $NETCDF_VERSION $NETCDF_FORTRAN_VERSION
+getBison    $BISON_VERSION
+getFlex     $FLEX_VERSION
+getWRF      $WRF_VERSION
+getWRFDA    $WRFDA_VERSION
+getWPS      $WPS_VERSION
 getPnetCDF  $PNETCDF_VERSION
 getPIO      $PIO_VERSION
 #getMPAS     $MPAS_VERSION
