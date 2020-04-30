@@ -193,15 +193,17 @@ checkInfo() {
     echo $NETCDF_FORTRAN_VERSION
     echo $BISON_VERSION
     echo $FLEX_VERSION
-    echo $WRF_VERSION
-    echo $WPS_VERSION
-    echo $PIO_VERSION
-    echo $PNETCDF_VERSION
+    #echo $WRF_VERSION
+    #echo $WPS_VERSION
+    #echo $PIO_VERSION
+    #echo $PNETCDF_VERSION
     echo ""
     echo "=========================================================="
     echo ""
-    echo "WRF will be installed in ${red} $HOME/$WRF_VERSION ${plain}"
-    echo "WPS will be installed in ${red} $HOME/$WPS_VERSION ${plain}"
+    echo "WPS       will be installed in ${red} $HOME/$WPS_VERSION ${plain}"
+    echo "WRF       will be installed in ${red} $HOME/$WRF_VERSION ${plain}"
+    echo "WPFplus   will be installed in ${red} $HOME/$WRFplus_VERSION ${plain}"
+    echo "WPFDA     will be installed in ${red} $HOME/$WRFDA_VERSION ${plain}"
     echo ""
 }
 
@@ -638,10 +640,11 @@ checkFinishWRF() {
         echo -e "\nAll install ${green}successful${plain}\n"
         ls -d $HOME/$WPS_VERSION --color=auto
         ls -d $HOME/$WRF_VERSION --color=auto
+        ls -d $HOME/$WRFplus_VERSION --color=auto
         ls -d $HOME/$WRFDA_VERSION --color=auto
         echo -e "\nClean"
-        sudo rm $SRC_DIR -r
-        sudo rm $LOG_DIR -r
+        rm $SRC_DIR -r
+        rm $LOG_DIR -r
         echo -e "\nEnjoy it\n"
     else
         echo -e "\nInstall ${red}failed${plain} please check errors\n"
