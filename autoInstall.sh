@@ -43,6 +43,9 @@ MPAS_VERSION="MPAS-Model-7.0" #https://github.com/MPAS-Dev/MPAS-Model
 WRF_CHEM_SETTING=0
 WRF_KPP_SETTING=0
 
+# check flag
+WRF_FLAG=0
+
 # download src of lib
 wgetSource() {
     cd $SRC_DIR
@@ -456,7 +459,6 @@ getWRF() {
         echo -e "\nCompile WRF"
         ./compile $WRF_WPS_OPENMP em_real &> $LOG_DIR/WRF_em_real.log
         flag=0
-        WRF_FLAG=0
         for file in $(ls $HOME/$WRF_VERSION/main/*.exe)
         do
             flag=$(( $flag + 1 ))
@@ -506,7 +508,6 @@ getWRFplus() {
         export WRFPLUS_DIR=$HOME/$1/WRFPLUS
         echo "export WRFPLUS_DIR=$HOME/$1" >> $HOME/.bashrc
         flag=0
-        WRF_FLAG=0
         for file in $(ls $HOME/$WRFplus_VERSION/run/*.exe)
         do
             flag=$(( $flag + 1 ))
@@ -531,6 +532,10 @@ getWRFDA() {
     do
         flag=$(( $flag + 1 ))
     done
+    for file in $(ls $HOME/$WRFDA_VERSION/var/obsproc/src/*.exe 2>/dev/null)
+    do
+        flag=$(( $flag + 1 ))
+    done
     if [ $flag -ne 44 ];then
         echo "Install WRFDA"
         if [ ! -s $HOME/$WRFDA_VERSION/configure ];then
@@ -552,8 +557,11 @@ getWRFDA() {
         echo -e "\nCompile WRFDA with wrfplus"
         ./compile $WRF_WPS_OPENMP all_wrfvar >& $LOG_DIR/WRFDA_compile.log
         flag=0
-        WRF_FLAG=0
         for file in $(ls $HOME/$WRFDA_VERSION/var/build/*.exe)
+        do
+            flag=$(( $flag + 1 ))
+        done
+        for file in $(ls $HOME/$WRFDA_VERSION/var/obsproc/src/*.exe 2>/dev/null)
         do
             flag=$(( $flag + 1 ))
         done
