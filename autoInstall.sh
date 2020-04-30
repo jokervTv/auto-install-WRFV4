@@ -33,6 +33,7 @@ BISON_VERSION="bison-3.5.4" #http://ftpmirror.gnu.org/bison/
 FLEX_VERSION="flex-2.6.4" #https://github.com/westes/flex
 WPS_VERSION="WPS-4.2" #https://github.com/wrf-model/WPS
 WRF_VERSION="WRF-4.2" #https://github.com/wrf-model/WRF
+WRFplus_VERSION="WRFplus-4.2" #https://github.com/wrf-model/WRF
 WRFDA_VERSION="WRFDA-4.2" #https://github.com/wrf-model/WRF
 PIO_VERSION="pio-2.5.0" #https://github.com/NCAR/ParallelIO/
 PNETCDF_VERSION="pnetcdf-1.11.2" #https://github.com/Parallel-NetCDF/PnetCDF
@@ -471,19 +472,21 @@ getWRF() {
     fi
 }
 
-# Install WRFDA
-getWRFDA() {
+# Install WRFplus
+getWRFplus() {
     flag=0
-    for file in $(ls $HOME/$WRFDA_VERSION/var/build/*.exe 2>/dev/null)
+    for file in $(ls $HOME/$WRFplus_VERSION/run/*.exe 2>/dev/null)
     do
         flag=$(( $flag + 1 ))
     done
-    if [ $flag -ne 44 ];then
-        echo "Install WRFDA"
-        if [ ! -s $HOME/$WRF_VERSION/configure ];then
+    if [ $flag -ne 1 ];then
+        echo "Install WRFplus"
+        if [ ! -s $HOME/$WRFplus_VERSION/configure ];then
             if [ ! -s $SRC_DIR/$WRF_VERSION.tar.gz ];then
                 wgetSource $1
-                cd $HOME && mv $SRC_DIR/$WRF_VERSION $HOME/$WRFDA_VERSION
+                cd $HOME && mv $SRC_DIR/$WRF_VERSION $HOME/$WRFplus_VERSION
+            else
+                tar -xf $SRC_DIR/$WRF_VERSION.tar.gz -C $HOME/$1
             fi
         fi
         cd $HOME/$1
@@ -498,12 +501,53 @@ getWRFDA() {
         echo -e "\nCompile wrfplus"
         sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wrf
         sed -i '999s/REAL, INTENT(IN)/REAL(8), INTENT(IN)/' external/io_int/module_internal_header_util.f
-        ./compile $WRF_WPS_OPENMP wrfplus &> $LOG_DIR/WRFDA_wrfplus_compile.log
+        ./compile $WRF_WPS_OPENMP wrfplus &> $LOG_DIR/WRFplus_compile.log
         export WRFPLUS_DIR=$HOME/$1/WRFPLUS
         echo "WRFPLUS_DIR=$HOME/$1/WRFPLUS" >> $HOME/.bashrc
+        flag=0
+        WRF_FLAG=0
+        for file in $(ls $HOME/$WRFplus_VERSION/build/*.exe)
+        do
+            flag=$(( $flag + 1 ))
+        done
+        if [ $flag -eq 1 ];then
+            echo -e "\n\nWRFDA install ${green}successful${plain}\n"
+            WRF_FLAG=$(( $WRF_FLAG + 1 ))
+        else
+            echo -e "\nInstall WRFplus ${red}failed${plain} please check errors in logs($LOG_DIR/)\n"
+            exit 1
+        fi
+    else
+        echo -e "\nWRFplus has been installed\n"
+        WRF_FLAG=$(( $WRF_FLAG + 1 ))
+    fi
+}
+
+# Install WRFDA
+getWRFDA() {
+    flag=0
+    for file in $(ls $HOME/$WRFDA_VERSION/var/build/*.exe 2>/dev/null)
+    do
+        flag=$(( $flag + 1 ))
+    done
+    if [ $flag -ne 44 ];then
+        echo "Install WRFDA"
+        if [ ! -s $HOME/$WRFDA_VERSION/configure ];then
+            if [ ! -s $SRC_DIR/$WRF_VERSION.tar.gz ];then
+                wgetSource $1
+                cd $HOME && mv $SRC_DIR/$WRF_VERSION $HOME/$WRFDA_VERSION
+            else
+                tar -xf $SRC_DIR/$WRF_VERSION.tar.gz -C $HOME/$1
+            fi
+        fi
+        cd $HOME/$1
+        echo " ============================================================== "
+        echo -e "\nClean\n"
+        ./clean -a &>/dev/null
+        ulimit -s unlimited
         echo " ============================================================== "
         echo -e "\nConfigure WRFDA: 33. (smpar)   GNU (gfortran/gcc)"
-        ./configure 4dvar
+        echo '33' |./configure 4dvar
         echo -e "\nCompile WRFDA with wrfplus"
         ./compile $WRF_WPS_OPENMP all_wrfvar >& $LOG_DIR/WRFDA_compile.log
         flag=0
@@ -581,7 +625,7 @@ getWPS() {
 checkFinishWRF() {
     echo "# END for WRF or MPAS automatic installation" >> $HOME/.bashrc
     echo "###############################################" >> $HOME/.bashrc
-    if [ $WRF_FLAG -eq 3 ];then
+    if [ $WRF_FLAG -eq 4 ];then
         echo -e "\nAll install ${green}successful${plain}\n"
         ls -d $HOME/$WPS_VERSION --color=auto
         ls -d $HOME/$WRF_VERSION --color=auto
@@ -653,6 +697,7 @@ getNetCDF   $NETCDF_VERSION $NETCDF_FORTRAN_VERSION
 getBison    $BISON_VERSION
 getFlex     $FLEX_VERSION
 getWRF      $WRF_VERSION
+getWRFplus  $WRFplus_VERSION
 getWRFDA    $WRFDA_VERSION
 getWPS      $WPS_VERSION
 getPnetCDF  $PNETCDF_VERSION
