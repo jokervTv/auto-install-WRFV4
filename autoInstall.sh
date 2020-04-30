@@ -123,7 +123,7 @@ getTest() {
     fi
 }
 
-getWRFChem() {
+getWRFChemWill() {
     echo "============================================================"
     echo "do you wanna build WRF-Chem ? (defualt: no)"
     echo "0.no"
@@ -435,11 +435,13 @@ getWRF() {
         flag=$(( $flag + 1 ))
     done
     if [ $flag -ne 4 ];then
-        echo "Install WRF"
+        echo "Download WRF"
         if [ ! -s $HOME/$WRF_VERSION/configure ];then
             if [ ! -s $SRC_DIR/$WRF_VERSION.tar.gz ];then
                 wgetSource $1
                 cd $HOME && mv $SRC_DIR/$1 $HOME/
+            else
+                tar -xf $1.tar.gz -C $HOME/
             fi
         fi
         cd $HOME/$1
@@ -486,7 +488,7 @@ getWRFplus() {
                 wgetSource $1
                 cd $HOME && mv $SRC_DIR/$WRF_VERSION $HOME/$WRFplus_VERSION
             else
-                tar -xf $SRC_DIR/$WRF_VERSION.tar.gz -C $HOME/$1
+                cp -r $HOME/$WRF_VERSION $HOME/$WRFplus_VERSION
             fi
         fi
         cd $HOME/$1
@@ -537,7 +539,7 @@ getWRFDA() {
                 wgetSource $1
                 cd $HOME && mv $SRC_DIR/$WRF_VERSION $HOME/$WRFDA_VERSION
             else
-                tar -xf $SRC_DIR/$WRF_VERSION.tar.gz -C $HOME/$1
+                cp -r $HOME/$WRF_VERSION $HOME/$1
             fi
         fi
         cd $HOME/$1
@@ -685,7 +687,7 @@ getInfo
 getDir
 getOpenmp
 #getTest
-getWRFChem
+#getWRFChemWill
 setSources
 checkInfo
 aptLib
