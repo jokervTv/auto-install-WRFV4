@@ -502,13 +502,12 @@ getWRFplus() {
         echo " ============================================================== "
         echo -e "\nCompile wrfplus"
         sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wrf
-        sed -i '999s/REAL, INTENT(IN)/REAL(8), INTENT(IN)/' external/io_int/module_internal_header_util.f
         ./compile $WRF_WPS_OPENMP wrfplus &> $LOG_DIR/WRFplus_compile.log
         export WRFPLUS_DIR=$HOME/$1/WRFPLUS
         echo "WRFPLUS_DIR=$HOME/$1/WRFPLUS" >> $HOME/.bashrc
         flag=0
         WRF_FLAG=0
-        for file in $(ls $HOME/$WRFplus_VERSION/build/*.exe)
+        for file in $(ls $HOME/$WRFplus_VERSION/run/*.exe)
         do
             flag=$(( $flag + 1 ))
         done
