@@ -505,7 +505,7 @@ getWRFplus() {
         echo -e "\nCompile wrfplus"
         sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wrf
         ./compile $WRF_WPS_OPENMP wrfplus &> $LOG_DIR/WRFplus_compile.log
-        export WRFPLUS_DIR=$HOME/$1/WRFPLUS
+        export WRFPLUS_DIR=$HOME/$1
         echo "export WRFPLUS_DIR=$HOME/$1" >> $HOME/.bashrc
         flag=0
         for file in $(ls $HOME/$WRFplus_VERSION/run/*.exe)
@@ -552,7 +552,7 @@ getWRFDA() {
         ./clean -a &>/dev/null
         ulimit -s unlimited
         echo " ============================================================== "
-        echo -e "\nConfigure WRFDA: 33. (smpar)   GNU (gfortran/gcc)"
+        echo -e "\nConfigure WRFDA: 17. (serial)   GNU (gfortran/gcc)"
         echo '17' | ./configure 4dvar
         echo -e "\nCompile WRFDA with wrfplus"
         ./compile $WRF_WPS_OPENMP all_wrfvar >& $LOG_DIR/WRFDA_compile.log
@@ -709,8 +709,8 @@ getWRF      $WRF_VERSION
 getWRFplus  $WRFplus_VERSION
 getWRFDA    $WRFDA_VERSION
 getWPS      $WPS_VERSION
-getPnetCDF  $PNETCDF_VERSION
-getPIO      $PIO_VERSION
+#getPnetCDF  $PNETCDF_VERSION
+#getPIO      $PIO_VERSION
 #getMPAS     $MPAS_VERSION
 checkFinishWRF
 restoreSource
