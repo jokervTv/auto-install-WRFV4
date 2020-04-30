@@ -5,7 +5,7 @@
 # Description:  install WPS,WRF,WRFDA,WRF-Chem.
 #               If you have any questions, send an e-mail or open an issue.
 # Start by
-# wget https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/autoInstall.sh | bash autoInstall.sh
+# wget https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/autoInstall.sh && bash autoInstall.sh
 
 
 # System info
