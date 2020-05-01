@@ -17,6 +17,12 @@ The shell `autoInstall.sh` works well.
     - 4.2
   - compiler options
     - Linux x86_64,gfortran (serial)
+- suport WRFDA
+  - version
+    - 4.2
+  - compiler options
+    - (serial) GNU (gfortran/gcc)
+  - installed WRFPLUS and WRFDA for 4DVAR run
 - change source
   - support Debian 7/8/9
   - support Ubuntu 14.04/16.06/18.04
@@ -42,16 +48,16 @@ The script `autoInstall.sh` has been tested in
 
 ## Todo
 
-- [ ] WRF-Chem
-- [ ] WRFDA
+- [ ] WRF-Chem support
+- [x] WRFDA support
 - [ ] MPAS support
 - [ ] step-by-step tutorial
 - [ ] more library download link
 - [ ] more WRF/WPS version support
 - [ ] more WRF/WPS compiler options support
 - [ ] more Linux distribution support
-- [ ] More tests
+- [ ] more tests
 
 ## Authors
 
-Yongpeng Zhang zhangyp6603@outlook.com
+Yongpeng Zhang: zhangyp6603@outlook.com
