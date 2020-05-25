@@ -9,6 +9,8 @@
 
 
 # System info
+OS_RELEASE="ubuntu"
+PACKAGE_MANAGER="apt-get"
 MAKE_OPENMP="-j4"
 WRF_WPS_OPENMP='-j 4'
 TEST_FLAG="0"
@@ -88,6 +90,32 @@ getInfo() {
 # Check authority
 checkRoot() {
     [[ $EUID -ne 0 ]] && echo -e "[${red}Error${plain}]: Please run this script with ${red}sudo${plain}!" && exit 1
+}
+
+checkSystemInfo() {
+    if [ -f /etc/redhat-release ]; then
+	    OS_RELEASE="centos"
+        PACKAGE_MANAGER="yum"
+	elif cat /etc/issue | grep -Eqi "debian"; then
+	    OS_RELEASE="ubuntu"
+        PACKAGE_MANAGER="apt-get"
+	elif cat /etc/issue | grep -Eqi "ubuntu"; then
+	    OS_RELEASE="ubuntu"
+        PACKAGE_MANAGER="apt-get"
+	elif cat /etc/issue | grep -Eqi "centos|red hat|redhat"; then
+	    OS_RELEASE="centos"
+        PACKAGE_MANAGER="yum"
+	elif cat /proc/version | grep -Eqi "debian"; then
+	    OS_RELEASE="ubuntu"
+        PACKAGE_MANAGER="apt-get"
+	elif cat /proc/version | grep -Eqi "ubuntu"; then
+	    OS_RELEASE="ubuntu"
+        PACKAGE_MANAGER="apt-get"
+	elif cat /proc/version | grep -Eqi "centos|red hat|redhat"; then
+	    OS_RELEASE="centos"
+        PACKAGE_MANAGER="apt-get"
+        PACKAGE_MANAGER="yum"
+	fi
 }
 
 getDir() {
@@ -208,20 +236,33 @@ checkInfo() {
 }
 
 # Install essential components
-aptLib() {
+getLibrary() {
     echo "=========================================================="
     echo -e "\nInstall essential components"
     echo "=========================================================="
-    sudo apt-get -yqq install glibc* libgrib2c0d libgrib2c-dev libjpeg8* libpng16* perl curl
-    sudo apt-get -yqq install libpng-tools
-    sudo apt-get -yqq install libpng-devel
-    sudo apt-get -yqq install libpng-dev
-    sudo apt-get -yqq install tcsh samba cpp m4 quota
-    sudo apt-get -yqq install cmake make wget tar
-    sudo apt-get -yqq install autoconf libtool mpich automake
-    sudo apt-get -yqq install autopoint gettext
-    sudo apt-get -yqq install libcurl4-openssl-dev libcurl4
-    sudo apt-get -yqq install git
+    if [ "$OS_RELEASE" = "ubuntu" ]; then
+        sudo $PACKAGE_MANAGER -yqq install glibc* libgrib2c0d libgrib2c-dev libjpeg8* libpng16* perl curl
+        sudo $PACKAGE_MANAGER -yqq install libpng-tools
+        sudo $PACKAGE_MANAGER -yqq install libpng-devel
+        sudo $PACKAGE_MANAGER -yqq install libpng-dev
+        sudo $PACKAGE_MANAGER -yqq install tcsh samba cpp m4 quota
+        sudo $PACKAGE_MANAGER -yqq install cmake make wget tar
+        sudo $PACKAGE_MANAGER -yqq install autoconf libtool mpich automake
+        sudo $PACKAGE_MANAGER -yqq install autopoint gettext
+        sudo $PACKAGE_MANAGER -yqq install libcurl4-openssl-dev libcurl4
+        sudo $PACKAGE_MANAGER -yqq install git
+    elif [ "$OS_RELEASE" = "centos" ]; then
+        sudo $PACKAGE_MANAGER -yqq install libjpeg-turbo libjpeg-turbo-devel
+        sudo $PACKAGE_MANAGER -yqq install libpng-devel libpng16*
+        sudo $PACKAGE_MANAGER -yqq install tcsh samba cpp m4 quota
+        sudo $PACKAGE_MANAGER -yqq install gcc gcc-c++ gcc-gfortran
+        sudo $PACKAGE_MANAGER -yqq install cmake make wget tar
+        sudo $PACKAGE_MANAGER -yqq install autoconf libtool mpich automake
+        sudo $PACKAGE_MANAGER -yqq install gettext-devel gettext
+        sudo $PACKAGE_MANAGER -yqq install libcurl-devel libcurl curl
+        sudo $PACKAGE_MANAGER -yqq install git perl
+
+    fi
 }
 
 # Creat logs and backupfiles
@@ -693,6 +734,7 @@ restoreSource() {
 #-------functions end--------
 
 getInfo
+checkSystemInfo
 #checkRoot
 getDir
 getOpenmp
@@ -700,7 +742,7 @@ getOpenmp
 #getWRFChemWill
 setSources
 checkInfo
-aptLib
+getLibrary
 creatLogs
 getZilb     $ZLIB_VERSION
 getJasper   $JASPER_VERSION
