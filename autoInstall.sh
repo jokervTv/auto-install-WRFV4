@@ -261,7 +261,6 @@ getLibrary() {
         sudo $PACKAGE_MANAGER -yqq install gettext-devel gettext
         sudo $PACKAGE_MANAGER -yqq install libcurl-devel libcurl curl
         sudo $PACKAGE_MANAGER -yqq install git perl
-
     fi
 }
 
@@ -294,7 +293,12 @@ getZilb() {
 
 # Install jasper
 getJasper() {
-    if [ ! -s "$LIB_INSTALL_DIR/$1/lib/libjasper.so" ]; then
+    if [ "$OS_RELEASE" = "ubuntu" ]; then
+        TEMP_JASPER_LIB_DIR="$LIB_INSTALL_DIR/$1/lib"
+    elif [ "$OS_RELEASE" = "centos" ]; then
+        TEMP_JASPER_LIB_DIR="$LIB_INSTALL_DIR/$1/lib64"
+    fi
+    if [ ! -s "$TEMP_JASPER_LIB_DIR/libjasper.so" ]; then
         wgetSource $1
         cmake -G "Unix Makefiles" \
             -DALLOW_IN_SOURCE_BUILD=TRUE \
@@ -307,15 +311,15 @@ getJasper() {
             echo '' >> $HOME/.bashrc
             echo "#for $1" >> $HOME/.bashrc
             echo "export JASPER=$LIB_INSTALL_DIR/$1" >> $HOME/.bashrc
-            echo "export JASPERLIB=$LIB_INSTALL_DIR/$1/lib" >> $HOME/.bashrc
+            echo "export JASPERLIB=$TEMP_JASPER_LIB_DIR" >> $HOME/.bashrc
             echo "export JASPERINC=$LIB_INSTALL_DIR/$1/include" >> $HOME/.bashrc
             echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$1'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
         fi
     fi
     export JASPER=$LIB_INSTALL_DIR/$1
-    export JASPERLIB=$LIB_INSTALL_DIR/$1/lib
+    export JASPERLIB=$TEMP_JASPER_LIB_DIR
     export JASPERINC=$LIB_INSTALL_DIR/$1/include
-    export LD_LIBRARY_PATH=$LIB_INSTALL_DIR/$1/lib:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=$TEMP_JASPER_LIB_DIR:$LD_LIBRARY_PATH
 }
 
 # Install hdf5
@@ -647,12 +651,12 @@ getWPS() {
         ./clean -a &>/dev/null
         echo " ============================================================== "
         echo -e "\nConfigure WPS: 1. Linux x86_64,gfortran (serial)"
-        sed -i 's/standard_wrf_dirs="WRF WRF-4.0.3 WRF-4.0.2 WRF-4.0.1 WRF-4.0 WRFV3"/standard_wrf_dirs="WRF WRF-4.0.3 WRF-4.0.2 WRF-4.0.1 WRF-4.0 WRFV3 WRF-4.1.2"/g' ./configure
+        sed -i 's/standard_wrf_dirs="WRF WRF-4.0.3 WRF-4.0.2 WRF-4.0.1 WRF-4.0 WRFV3 WRF-4.1.2"/standard_wrf_dirs="WRF WRF-4.2 WRF-4.0.3 WRF-4.0.2 WRF-4.0.1 WRF-4.0 WRFV3 WRF-4.1.2"/g' ./configure
         echo '1' | ./configure &>$LOG_DIR/$1.config.log
         sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wps
         echo " ============================================================== "
         echo -e "\nCompile WPS"
-        ./compile &> $LOG_DIR/WPS.compile.log
+        ./compile &> $LOG_DIR/$1.compile.log
         flag=0
         for file in $(ls $HOME/$WPS_VERSION/util/*.exe)
         do
@@ -689,6 +693,7 @@ checkFinishWRF() {
         echo -e "\nEnjoy it\n"
     else
         echo -e "\nInstall ${red}failed${plain} please check errors\n"
+        cp $HOME/.bashrc $HOME/.bashrc.WRF.bak
         cp $HOME/.bashrc.autoInstall.bak $HOME/.bashrc
         rm $HOME/.bashrc.autoInstall.bak
     fi
