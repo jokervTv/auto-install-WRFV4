@@ -1,27 +1,22 @@
 # auto-install-WRFV4
 
-Automatically install WRF and WPS with Ubuntu and GCC.
+Automatically install WRF and WPS using GCC.
 
 The shell `autoInstall.sh` works well.
 `install_wrf-4_GUN.sh` is deprecated.
 
 ## Feature
 
+- support Ubuntu, CentOS
 - support WRF
-  - version
-    - 4.2
-  - compiler options
-    - (smpar) GNU(gfortran/gcc)
+  - version: 4.2
+  - compiler options: (smpar) GNU(gfortran/gcc)
 - support WPS
-  - version
-    - 4.2
-  - compiler options
-    - Linux x86_64,gfortran (serial)
+  - version: 4.2
+  - compiler options: Linux x86_64,gfortran (serial)
 - suport WRFDA
-  - version
-    - 4.2
-  - compiler options
-    - (serial) GNU (gfortran/gcc)
+  - version: 4.2
+  - compiler options: (serial) GNU (gfortran/gcc)
   - installed WRFPLUS and WRFDA for 4DVAR run
 - change source
   - support Debian 7/8/9
@@ -31,10 +26,10 @@ The shell `autoInstall.sh` works well.
 
 ## Getting Started
 
-now only support Ubuntu:
+Run the following command in your terminal.
 
 ```sh
-wget -nv https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/autoInstall.sh && bash autoInstall.sh
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/autoInstall.sh)
 ```
 
 ## Test information
@@ -42,21 +37,19 @@ wget -nv https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/au
 The script `autoInstall.sh` has been tested in
 
 - aliyun ESC (Elastic Compute Service): Ubuntu 18.04 - successfully
+- aliyun ESC (Elastic Compute Service): CentOS 8.1 - successfully
 - WSL2: Ubuntu 20.04 - successfully
-
-
 
 ## Todo
 
 - [ ] WRF-Chem support
 - [x] WRFDA support
-- [ ] MPAS support
 - [ ] step-by-step tutorial
 - [ ] more library download link
-- [ ] more WRF/WPS version support
+- [ ] ~~more WRF/WPS version support~~
 - [ ] more WRF/WPS compiler options support
-- [ ] more Linux distribution support
-- [ ] more tests
+- [x] more Linux distribution support
+- [x] more tests
 
 ## Authors
 
