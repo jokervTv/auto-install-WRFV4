@@ -239,6 +239,9 @@ aptLib() {
     sudo apt-get -yqq install autopoint gettext
     sudo apt-get -yqq install libcurl4-openssl-dev libcurl4
     sudo apt-get -yqq install git
+    echo "=========================================================="
+    echo -e "\nInstall essential components "
+    echo "=========================================================="
 }
 
 # Creat logs and backupfiles
@@ -506,8 +509,8 @@ getWRFplus() {
         echo "Install WRFplus"
         if [ ! -s $HOME/$WRFplus_VERSION/configure ];then
             if [ ! -s $SRC_DIR/$WRF_VERSION.tar.gz ];then
-                wgetSource $1
-                cd $HOME && mv $SRC_DIR/$WRF_VERSION $HOME/$WRFplus_VERSION
+                wgetSource $WRF_VERSION
+                cd $HOME && cp -r $SRC_DIR/$WRF_VERSION $HOME/$WRFplus_VERSION
             else
                 cp -r $HOME/$WRF_VERSION $HOME/$WRFplus_VERSION
             fi
@@ -710,6 +713,7 @@ getWPS() {
 checkFinishWRF() {
     echo "# END for WRF or MPAS automatic installation" >> $HOME/.bashrc
     echo "###############################################" >> $HOME/.bashrc
+
     if [ $WRF_INSTALL_SUCCESS_FLAG -eq $WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE ];then
         echo -e "\nAll install ${green}successful${plain}\n"
         ls -d $HOME/$WPS_VERSION --color=auto
@@ -749,20 +753,6 @@ getMPAS() {
     cd $HOME/MPAS-atmosphere
     make gfortran CORE=atmosphere OPENMP=true USE_PIO2=true AUTOCLEAN=true \
     PIO=$LIB_INSTALL_DIR/$PIO_VERSION &>$LOG_DIR/MPAS-atmosphere.log
-}
-
-restoreSource() {
-    willness=0
-    echo "=============================================="
-    echo "Do you wanna restore sources ?"
-    echo "  1. yes"
-    echo "  2. no (default)"
-    echo "==============================================="
-    read willness
-
-    if [ $willness -eq "1" ];then
-        bash superupdate.sh restore
-    fi
 }
 
 envInstall() {
@@ -830,4 +820,3 @@ wrfFeatureInstall() {
 chooseFeatures
 wrfFeatureInstall
 checkFinishWRF
-restoreSource
