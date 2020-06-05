@@ -208,8 +208,10 @@ checkInfo() {
     echo $HDF5_VERSION
     echo $NETCDF_VERSION
     echo $NETCDF_FORTRAN_VERSION
-    echo $BISON_VERSION
-    echo $FLEX_VERSION
+    if [ "$WRF_INSTALL_FLAG" -eq "2" ];then
+        echo $BISON_VERSION
+        echo $FLEX_VERSION
+    fi
     #echo $WRF_VERSION
     #echo $WPS_VERSION
     #echo $PIO_VERSION
@@ -219,8 +221,10 @@ checkInfo() {
     echo ""
     echo "WPS       will be installed in ${red} $HOME/$WPS_VERSION ${plain}"
     echo "WRF       will be installed in ${red} $HOME/$WRF_VERSION ${plain}"
-    echo "WPFplus   will be installed in ${red} $HOME/$WRFplus_VERSION ${plain}"
-    echo "WPFDA     will be installed in ${red} $HOME/$WRFDA_VERSION ${plain}"
+    if [ "$WRF_INSTALL_FLAG" -eq "4" ];then
+        echo "WPFplus   will be installed in ${red} $HOME/$WRFplus_VERSION ${plain}"
+        echo "WPFDA     will be installed in ${red} $HOME/$WRFDA_VERSION ${plain}"
+    fi
     echo ""
 }
 
