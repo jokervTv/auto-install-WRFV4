@@ -5,7 +5,7 @@
 # Description:  install WPS,WRF,WRFDA,WRF-Chem.
 #               If you have any questions, send an e-mail or open an issue.
 # Start by
-# wget https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/autoInstall.sh && bash autoInstall.sh
+# bash -c "$(curl -fsSL https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/autoInstall.sh)"
 
 
 # System info
@@ -46,7 +46,8 @@ WRF_CHEM_SETTING=0
 WRF_KPP_SETTING=0
 
 # check flag
-WRF_FLAG=0
+WRF_INSTALL_FLAG=1
+WRF_INSTALL_SUCCESS_FLAG=0
 
 # download src of lib
 wgetSource() {
@@ -154,18 +155,6 @@ getTest() {
     fi
 }
 
-getWRFChemWill() {
-    echo "============================================================"
-    echo "do you wanna build WRF-Chem ? (defualt: no)"
-    echo "0.no"
-    echo "1.yes"
-    read read_test_flag
-    if [ "$read_test_flag" -eq "1" ];then
-        WRF_CHEM_SETTING="$read_test_flag"
-        WRF_KPP_SETTING="$read_test_flag"
-    fi
-}
-
 # Change sources
 setSources() {
     echo "=============================================="
@@ -184,25 +173,53 @@ setSources() {
     if  [ -n "$willness" ] ;then
         if [ $willness -ne "0" ];then
             wget -nv https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/superupdate.sh
-            chmod +x ./superupdata.sh
         fi
         if [ $willness -eq "1" ];then
-            bash superupdate.sh
+            sudo bash superupdate.sh
         elif [ $willness -eq "2" ];then
-            bash superupdate.sh cn
+            sudo bash superupdate.sh cn
         elif [ $willness -eq "3" ];then
-            bash superupdate.sh 163
+            sudo bash superupdate.sh 163
         elif [ $willness -eq "4" ];then
-            bash superupdate.sh aliyun
+            sudo bash superupdate.sh aliyun
         elif [ $willness -eq "5" ];then
-            bash superupdate.sh aws
+            sudo bash superupdate.sh aws
         fi
         if [ $willness -ne "0" ];then
-            apt-get update
+            sudo apt-get update
             rm ./superupdate.sh
         fi
     fi
     echo "==============================================="
+}
+
+chooseFeatures() {
+    echo "=============================================="
+    echo "Which option do you wanna choose ?"
+    echo ""
+    echo "  1. WPS, WRF:em_real"
+    echo "  2. WPS, WRF:em_real, WRF-chem (Support soon)"
+    echo "  3. WPS, WRF:em_real, WRF-hydro"
+    echo "  4. WPS, WRF:em_real, WRFDA:4dvar"
+    echo "  0. Building Libraries Only"
+    echo "=============================================="
+    read read_test_flag
+    if [ "$read_test_flag" -eq "0" ];then
+        WRF_INSTALL_FLAG=0
+        WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=0
+    elif [ "$read_test_flag" -eq "1" ];then
+        WRF_INSTALL_FLAG=1
+        WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=2
+    elif [ "$read_test_flag" -eq "2" ];then
+        WRF_INSTALL_FLAG=2
+        WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=2
+    elif [ "$read_test_flag" -eq "3" ];then
+        WRF_INSTALL_FLAG=3
+        WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=2
+    elif [ "$read_test_flag" -eq "4" ];then
+        WRF_INSTALL_FLAG=4
+        WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=4
+    fi
 }
 
 checkInfo() {
@@ -219,8 +236,10 @@ checkInfo() {
     echo $HDF5_VERSION
     echo $NETCDF_VERSION
     echo $NETCDF_FORTRAN_VERSION
-    echo $BISON_VERSION
-    echo $FLEX_VERSION
+    if [ "$WRF_INSTALL_FLAG" -eq "2" ];then
+        echo $BISON_VERSION
+        echo $FLEX_VERSION
+    fi
     #echo $WRF_VERSION
     #echo $WPS_VERSION
     #echo $PIO_VERSION
@@ -230,8 +249,10 @@ checkInfo() {
     echo ""
     echo "WPS       will be installed in ${red} $HOME/$WPS_VERSION ${plain}"
     echo "WRF       will be installed in ${red} $HOME/$WRF_VERSION ${plain}"
-    echo "WPFplus   will be installed in ${red} $HOME/$WRFplus_VERSION ${plain}"
-    echo "WPFDA     will be installed in ${red} $HOME/$WRFDA_VERSION ${plain}"
+    if [ "$WRF_INSTALL_FLAG" -eq "4" ];then
+        echo "WPFplus   will be installed in ${red} $HOME/$WRFplus_VERSION ${plain}"
+        echo "WPFDA     will be installed in ${red} $HOME/$WRFDA_VERSION ${plain}"
+    fi
     echo ""
 }
 
@@ -512,14 +533,14 @@ getWRF() {
         done
         if [ $flag -eq 4 ];then
             echo -e "\n\nWRF install ${green}successful${plain}\n"
-            WRF_FLAG=$(( $WRF_FLAG + 1 ))
+            WRF_INSTALL_SUCCESS_FLAG=$(( $WRF_INSTALL_SUCCESS_FLAG + 1 ))
         else
             echo -e "\nInstall WRF ${red}failed${plain} please check errors in logs($LOG_DIR/)\n"
             exit 1
         fi
     else
         echo -e "\nWRF already installed\n"
-        WRF_FLAG=$(( $WRF_FLAG + 1 ))
+        WRF_INSTALL_SUCCESS_FLAG=$(( $WRF_INSTALL_SUCCESS_FLAG + 1 ))
     fi
 }
 
@@ -534,8 +555,8 @@ getWRFplus() {
         echo "Install WRFplus"
         if [ ! -s $HOME/$WRFplus_VERSION/configure ];then
             if [ ! -s $SRC_DIR/$WRF_VERSION.tar.gz ];then
-                wgetSource $1
-                cd $HOME && mv $SRC_DIR/$WRF_VERSION $HOME/$WRFplus_VERSION
+                wgetSource $WRF_VERSION
+                cd $HOME && cp -r $SRC_DIR/$WRF_VERSION $HOME/$WRFplus_VERSION
             else
                 cp -r $HOME/$WRF_VERSION $HOME/$WRFplus_VERSION
             fi
@@ -561,14 +582,14 @@ getWRFplus() {
         done
         if [ $flag -eq 1 ];then
             echo -e "\n\nWRFDA install ${green}successful${plain}\n"
-            WRF_FLAG=$(( $WRF_FLAG + 1 ))
+            WRF_INSTALL_SUCCESS_FLAG=$(( $WRF_INSTALL_SUCCESS_FLAG + 1 ))
         else
             echo -e "\nInstall WRFplus ${red}failed${plain} please check errors in logs($LOG_DIR/)\n"
             exit 1
         fi
     else
         echo -e "\nWRFplus has been installed\n"
-        WRF_FLAG=$(( $WRF_FLAG + 1 ))
+        WRF_INSTALL_SUCCESS_FLAG=$(( $WRF_INSTALL_SUCCESS_FLAG + 1 ))
     fi
 }
 
@@ -614,14 +635,71 @@ getWRFDA() {
         done
         if [ $flag -eq 44 ];then
             echo -e "\n\nWRFDA install ${green}successful${plain}\n"
-            WRF_FLAG=$(( $WRF_FLAG + 1 ))
+            WRF_INSTALL_SUCCESS_FLAG=$(( $WRF_INSTALL_SUCCESS_FLAG + 1 ))
         else
             echo -e "\nInstall WRF ${red}failed${plain} please check errors in logs($LOG_DIR/)\n"
             exit 1
         fi
     else
         echo -e "\nWRFDA has been installed\n"
-        WRF_FLAG=$(( $WRF_FLAG + 1 ))
+        WRF_INSTALL_SUCCESS_FLAG=$(( $WRF_INSTALL_SUCCESS_FLAG + 1 ))
+    fi
+}
+
+# Install WRFHydro
+getWRFHydro() {
+    if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
+        echo '' >> $HOME/.bashrc
+        echo "#for $WRF_VERSION" >> $HOME/.bashrc
+        echo 'export WRFIO_NCD_LARGE_FILE_SUPPORT=1' >> $HOME/.bashrc
+        echo "export WRF_CHEM=$WRF_CHEM_SETTING" >> $HOME/.bashrc
+        echo "export WRF_KPP=$WRF_KPP_SETTING" >> $HOME/.bashrc
+        mv $HOME/.bashrc.autoInstall.bak.temp $HOME/.bashrc.autoInstall.bak
+    fi
+    export WRFIO_NCD_LARGE_FILE_SUPPORT=1
+    export WRF_HYDRO=1
+    flag=0
+    for file in $(ls $HOME/$WRF_VERSION/main/*.exe 2>/dev/null)
+    do
+        flag=$(( $flag + 1 ))
+    done
+    if [ $flag -ne 4 ];then
+        echo "Download WRF"
+        if [ ! -s $HOME/$WRF_VERSION/configure ];then
+            if [ ! -s $SRC_DIR/$WRF_VERSION.tar.gz ];then
+                wgetSource $1
+                cd $HOME && mv $SRC_DIR/$1 $HOME/
+            else
+                tar -xf $1.tar.gz -C $HOME/
+            fi
+        fi
+        cd $HOME/$1
+        echo " ============================================================== "
+        echo -e "\nClean\n"
+        ./clean -a &>/dev/null
+        ulimit -s unlimited
+        echo " ============================================================== "
+        echo -e "\nConfigure WRF: 34.(dmpar) GNU(gfortran/gcc)" # todo more options should be choose
+        echo '34\n1' | ./configure
+        echo " ============================================================== "
+        echo -e "\nCompile WRF"
+        sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wrf
+        ./compile $WRF_WPS_OPENMP em_real &> $LOG_DIR/WRF_em_real.log
+        flag=0
+        for file in $(ls $HOME/$WRF_VERSION/main/*.exe)
+        do
+            flag=$(( $flag + 1 ))
+        done
+        if [ $flag -eq 4 ];then
+            echo -e "\n\nWRF install ${green}successful${plain}\n"
+            WRF_INSTALL_SUCCESS_FLAG=$(( $WRF_INSTALL_SUCCESS_FLAG + 1 ))
+        else
+            echo -e "\nInstall WRF ${red}failed${plain} please check errors in logs($LOG_DIR/)\n"
+            exit 1
+        fi
+    else
+        echo -e "\nWRF already installed\n"
+        WRF_INSTALL_SUCCESS_FLAG=$(( $WRF_INSTALL_SUCCESS_FLAG + 1 ))
     fi
 }
 
@@ -668,25 +746,28 @@ getWPS() {
         done
         if [ $flag -eq 11 ];then
             echo -e "\n\nWPS install ${green}successful${plain}\n"
-            WRF_FLAG=$(( $WRF_FLAG + 1 ))
+            WRF_INSTALL_SUCCESS_FLAG=$(( $WRF_INSTALL_SUCCESS_FLAG + 1 ))
         else
             echo -e "Install WPS ${red}failed${plain}, please check errors in logs($LOG_DIR/)\n"
         fi
     else
         echo -e "\nWPS already installed\n"
-        WRF_FLAG=$(( $WRF_FLAG + 1 ))
+        WRF_INSTALL_SUCCESS_FLAG=$(( $WRF_INSTALL_SUCCESS_FLAG + 1 ))
     fi
 }
 
 checkFinishWRF() {
     echo "# END for WRF or MPAS automatic installation" >> $HOME/.bashrc
     echo "###############################################" >> $HOME/.bashrc
-    if [ $WRF_FLAG -eq 4 ];then
+
+    if [ $WRF_INSTALL_SUCCESS_FLAG -eq $WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE ];then
         echo -e "\nAll install ${green}successful${plain}\n"
         ls -d $HOME/$WPS_VERSION --color=auto
         ls -d $HOME/$WRF_VERSION --color=auto
-        ls -d $HOME/$WRFplus_VERSION --color=auto
-        ls -d $HOME/$WRFDA_VERSION --color=auto
+        if [ $WRF_INSTALL_FLAG -eq 4 ];then
+            ls -d $HOME/$WRFplus_VERSION --color=auto
+            ls -d $HOME/$WRFDA_VERSION --color=auto
+        fi
         echo -e "\nClean"
         rm $SRC_DIR -r
         rm $LOG_DIR -r
@@ -695,7 +776,6 @@ checkFinishWRF() {
         echo -e "\nInstall ${red}failed${plain} please check errors\n"
         cp $HOME/.bashrc $HOME/.bashrc.WRF.bak
         cp $HOME/.bashrc.autoInstall.bak $HOME/.bashrc
-        rm $HOME/.bashrc.autoInstall.bak
     fi
 }
 
@@ -722,45 +802,68 @@ getMPAS() {
     PIO=$LIB_INSTALL_DIR/$PIO_VERSION &>$LOG_DIR/MPAS-atmosphere.log
 }
 
-restoreSource() {
-    willness=0
-    echo "=============================================="
-    echo "Do you wanna restore sources ?"
-    echo "  1. yes"
-    echo "  2. no (default)"
-    echo "==============================================="
-    read willness
+envInstall() {
+    getInfo
+    #checkRoot
+    getDir
+    getOpenmp
+    #getTest
+    setSources
+    checkInfo
+    aptLib
+    creatLogs
+    getZilb     $ZLIB_VERSION
+    getJasper   $JASPER_VERSION
+    getHDF5     $HDF5_VERSION
+    getNetCDF   $NETCDF_VERSION $NETCDF_FORTRAN_VERSION
+}
 
-    if [ $willness -eq "1" ];then
-        bash superupdate.sh restore
+wrfInstall() {
+    envInstall
+    getWRF      $WRF_VERSION
+    getWPS      $WPS_VERSION
+}
+
+wrfChemInstall() {
+    envInstall
+    getBison    $BISON_VERSION
+    getFlex     $FLEX_VERSION
+    WRF_CHEM_SETTING=1
+    WRF_KPP_SETTING=1
+    getWRF      $WRF_VERSION
+    getWPS      $WPS_VERSION
+}
+
+wrfHydroInstall() {
+    envInstall
+    getWRFHydro $WRF_VERSION
+    getWPS      $WPS_VERSION
+}
+
+wrfdaInstall() {
+    wrfInstall
+    getWRFplus  $WRFplus_VERSION
+    getWRFDA    $WRFDA_VERSION
+}
+
+wrfFeatureInstall() {
+    if   [ "$WRF_INSTALL_FLAG" -eq "0" ];then
+        envInstall
+    elif [ "$WRF_INSTALL_FLAG" -eq "1" ];then
+        wrfInstall
+    elif [ "$WRF_INSTALL_FLAG" -eq "2" ];then
+        wrfChemInstall
+    elif [ "$WRF_INSTALL_FLAG" -eq "3" ];then
+        wrfHydroInstall
+    elif [ "$WRF_INSTALL_FLAG" -eq "4" ];then
+        wrfdaInstall
     fi
 }
 
+
 #-------functions end--------
 
-getInfo
-checkSystemInfo
-#checkRoot
-getDir
-getOpenmp
-#getTest
-#getWRFChemWill
-setSources
-checkInfo
-getLibrary
-creatLogs
-getZilb     $ZLIB_VERSION
-getJasper   $JASPER_VERSION
-getHDF5     $HDF5_VERSION
-getNetCDF   $NETCDF_VERSION $NETCDF_FORTRAN_VERSION
-getBison    $BISON_VERSION
-getFlex     $FLEX_VERSION
-getWRF      $WRF_VERSION
-getWRFplus  $WRFplus_VERSION
-getWRFDA    $WRFDA_VERSION
-getWPS      $WPS_VERSION
-#getPnetCDF  $PNETCDF_VERSION
-#getPIO      $PIO_VERSION
-#getMPAS     $MPAS_VERSION
+
+chooseFeatures
+wrfFeatureInstall
 checkFinishWRF
-restoreSource
