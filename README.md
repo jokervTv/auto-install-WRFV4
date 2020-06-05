@@ -29,7 +29,7 @@ The shell `autoInstall.sh` works well.
 Run the following command in your terminal.
 
 ```sh
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/autoInstall.sh)
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/autoInstall.sh)"
 ```
 
 ## Test information
@@ -42,14 +42,11 @@ The script `autoInstall.sh` has been tested in
 
 ## Todo
 
-- [ ] WRF-Chem support
-- [x] WRFDA support
+- [ ] WRF-Chem(with KPP) support
 - [ ] step-by-step tutorial
 - [ ] more library download link
 - [ ] ~~more WRF/WPS version support~~
 - [ ] more WRF/WPS compiler options support
-- [x] more Linux distribution support
-- [x] more tests
 
 ## Authors
 
