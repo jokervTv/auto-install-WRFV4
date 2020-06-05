@@ -810,7 +810,8 @@ envInstall() {
     #getTest
     setSources
     checkInfo
-    aptLib
+    checkSystemInfo
+    getLibrary
     creatLogs
     getZilb     $ZLIB_VERSION
     getJasper   $JASPER_VERSION
