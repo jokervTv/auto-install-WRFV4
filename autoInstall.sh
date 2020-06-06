@@ -198,28 +198,34 @@ chooseFeatures() {
     echo "Which option do you wanna choose ?"
     echo ""
     echo "  1. WPS, WRF:em_real"
-    echo "  2. WPS, WRF:em_real, WRF-chem (Support soon)"
-    echo "  3. WPS, WRF:em_real, WRF-hydro"
+    if [ "$OS_RELEASE" = "centos" ];then
+        echo "  2. WPS, WRF:em_real, WRF-chem (with Kpp)"
+        echo "  3. WPS, WRF:em_real, WRF-hydro (support soon, NOT currently supported)"
+    elif [ "$OS_RELEASE" = "ubuntu" ];then
+        echo "  2. WPS, WRF:em_real, WRF-chem (without Kpp)"
+        echo "  3. WPS, WRF:em_real, WRF-hydro"
+    fi
     echo "  4. WPS, WRF:em_real, WRFDA:4dvar"
     echo "  0. Building Libraries Only"
     echo "=============================================="
     read read_test_flag
-    if [ "$read_test_flag" -eq "0" ];then
+    if [ $read_test_flag -eq 0 ];then
         WRF_INSTALL_FLAG=0
         WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=0
-    elif [ "$read_test_flag" -eq "1" ];then
+    elif [ $read_test_flag -eq 1 ];then
         WRF_INSTALL_FLAG=1
         WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=2
-    elif [ "$read_test_flag" -eq "2" ];then
+    elif [ $read_test_flag -eq 2 ];then
         WRF_INSTALL_FLAG=2
         WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=2
-    elif [ "$read_test_flag" -eq "3" ];then
+    elif [ $read_test_flag -eq 3 ];then
         WRF_INSTALL_FLAG=3
         WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=2
-    elif [ "$read_test_flag" -eq "4" ];then
+    elif [ $read_test_flag -eq 4 ];then
         WRF_INSTALL_FLAG=4
         WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=4
     fi
+    echo $WRF_INSTALL_FLAG
 }
 
 checkInfo() {
@@ -247,11 +253,13 @@ checkInfo() {
     echo ""
     echo "=========================================================="
     echo ""
-    echo "WPS       will be installed in ${red} $HOME/$WPS_VERSION ${plain}"
-    echo "WRF       will be installed in ${red} $HOME/$WRF_VERSION ${plain}"
-    if [ "$WRF_INSTALL_FLAG" -eq "4" ];then
-        echo "WPFplus   will be installed in ${red} $HOME/$WRFplus_VERSION ${plain}"
-        echo "WPFDA     will be installed in ${red} $HOME/$WRFDA_VERSION ${plain}"
+    if [ $WRF_INSTALL_FLAG -ne 0 ];then
+        echo "WPS       will be installed in ${red} $HOME/$WPS_VERSION ${plain}"
+        echo "WRF       will be installed in ${red} $HOME/$WRF_VERSION ${plain}"
+        if [ $WRF_INSTALL_FLAG -eq 4 ];then
+            echo "WPFplus   will be installed in ${red} $HOME/$WRFplus_VERSION ${plain}"
+            echo "WPFDA     will be installed in ${red} $HOME/$WRFDA_VERSION ${plain}"
+        fi
     fi
     echo ""
 }
@@ -278,11 +286,13 @@ getLibrary() {
         sudo $PACKAGE_MANAGER -yqq install tcsh samba cpp m4 quota
         sudo $PACKAGE_MANAGER -yqq install gcc gcc-c++ gcc-gfortran
         sudo $PACKAGE_MANAGER -yqq install cmake make wget tar
-        sudo $PACKAGE_MANAGER -yqq install autoconf libtool mpich automake
+        sudo $PACKAGE_MANAGER -yqq install autoconf libtool automake
+        sudo $PACKAGE_MANAGER -yqq install mpich mpich-devel
         sudo $PACKAGE_MANAGER -yqq install gettext-devel gettext
         sudo $PACKAGE_MANAGER -yqq install libcurl-devel libcurl curl
         sudo $PACKAGE_MANAGER -yqq install git perl
     fi
+    export PATH="/usr/lib64/mpich/bin:$PATH"
 }
 
 # Creat logs and backupfiles
@@ -657,7 +667,6 @@ getWRFHydro() {
         mv $HOME/.bashrc.autoInstall.bak.temp $HOME/.bashrc.autoInstall.bak
     fi
     export WRFIO_NCD_LARGE_FILE_SUPPORT=1
-    export WRF_HYDRO=1
     flag=0
     for file in $(ls $HOME/$WRF_VERSION/main/*.exe 2>/dev/null)
     do
@@ -674,6 +683,7 @@ getWRFHydro() {
             fi
         fi
         cd $HOME/$1
+        bash hydro/template/setEnvar.sh
         echo " ============================================================== "
         echo -e "\nClean\n"
         ./clean -a &>/dev/null
@@ -829,8 +839,13 @@ wrfChemInstall() {
     envInstall
     getBison    $BISON_VERSION
     getFlex     $FLEX_VERSION
-    WRF_CHEM_SETTING=1
-    WRF_KPP_SETTING=1
+    if [ "$OS_RELEASE" -eq "centos" ];then
+        WRF_CHEM_SETTING=1
+        WRF_KPP_SETTING=1
+    elif [ "$OS_RELEASE" -eq "ubuntu" ];then
+        WRF_CHEM_SETTING=1
+        WRF_KPP_SETTING=0
+    fi
     getWRF      $WRF_VERSION
     getWPS      $WPS_VERSION
 }
