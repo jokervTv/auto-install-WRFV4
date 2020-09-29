@@ -77,14 +77,14 @@ makeInstall() {
 getInfo() {
     clear
     echo ""
-	echo " ============================================================== "
-	echo " \                  Autoinstall WRF or MPAS                   / "
+    echo " ============================================================== "
+    echo " \                  Autoinstall WRF or MPAS                   / "
     echo " \     URL: https://github.com/jokervTv/auto-install-WRFV4    / "
     echo " \                                                            / "
     echo " \              Script Created by Yongpeng Zhang              / "
-	echo " \                            and                             / "
+    echo " \                            and                             / "
     echo " \              SuperUpdate.sh Created by Oldking             / "
-	echo " ============================================================== "
+    echo " ============================================================== "
     echo ""
 }
 
@@ -95,28 +95,28 @@ checkRoot() {
 
 checkSystemInfo() {
     if [ -f /etc/redhat-release ]; then
-	    OS_RELEASE="centos"
+        OS_RELEASE="centos"
         PACKAGE_MANAGER="yum"
-	elif cat /etc/issue | grep -Eqi "debian"; then
-	    OS_RELEASE="ubuntu"
+    elif cat /etc/issue | grep -Eqi "debian"; then
+        OS_RELEASE="ubuntu"
         PACKAGE_MANAGER="apt-get"
-	elif cat /etc/issue | grep -Eqi "ubuntu"; then
-	    OS_RELEASE="ubuntu"
+    elif cat /etc/issue | grep -Eqi "ubuntu"; then
+        OS_RELEASE="ubuntu"
         PACKAGE_MANAGER="apt-get"
-	elif cat /etc/issue | grep -Eqi "centos|red hat|redhat"; then
-	    OS_RELEASE="centos"
+    elif cat /etc/issue | grep -Eqi "centos|red hat|redhat"; then
+        OS_RELEASE="centos"
         PACKAGE_MANAGER="yum"
-	elif cat /proc/version | grep -Eqi "debian"; then
-	    OS_RELEASE="ubuntu"
+    elif cat /proc/version | grep -Eqi "debian"; then
+        OS_RELEASE="ubuntu"
         PACKAGE_MANAGER="apt-get"
-	elif cat /proc/version | grep -Eqi "ubuntu"; then
-	    OS_RELEASE="ubuntu"
+    elif cat /proc/version | grep -Eqi "ubuntu"; then
+        OS_RELEASE="ubuntu"
         PACKAGE_MANAGER="apt-get"
-	elif cat /proc/version | grep -Eqi "centos|red hat|redhat"; then
-	    OS_RELEASE="centos"
+    elif cat /proc/version | grep -Eqi "centos|red hat|redhat"; then
+        OS_RELEASE="centos"
         PACKAGE_MANAGER="apt-get"
         PACKAGE_MANAGER="yum"
-	fi
+    fi
 }
 
 getDir() {
@@ -132,9 +132,26 @@ getDir() {
     mkdir $LIB_INSTALL_DIR
 }
 
+getCompiler() {
+    echo "============================================================"
+    echo "Which compiler do you want to use ? (defualt: 1)"
+    echo ""
+    echo "  1. GUN (gcc/gfortran)"
+    echo "  2. intel oneapi"
+    read compier_index
+    if [ "$compier_index" -eq "2" ]; then
+        CC_VERSION="icc"
+        FC_VERSION="ifort"
+        CXX_VERSION="icpc"
+        MPICC_VERSION="mpicc"
+        MPIFC_VERSION="mpifort"
+        MPICXX_VERSION="mpicxx"
+    fi
+}
+
 getOpenmp() {
     echo "============================================================"
-    echo "How many physical cores does your wanna use ? (defualt: 4)"
+    echo "How many physical cores do you wan to use ? (defualt: 4)"
     echo "If you know nothing about this, please input 0"
     echo ""
     read cores_number
@@ -814,13 +831,13 @@ getMPAS() {
 
 envInstall() {
     getInfo
-    #checkRoot
+    # checkRoot
     getDir
+    # getCompiler
     getOpenmp
-    #getTest
+    # getTest
     setSources
     checkInfo
-    checkSystemInfo
     getLibrary
     creatLogs
     getZilb     $ZLIB_VERSION
@@ -880,6 +897,7 @@ wrfFeatureInstall() {
 #-------functions end--------
 
 
+checkSystemInfo
 chooseFeatures
 wrfFeatureInstall
 checkFinishWRF
