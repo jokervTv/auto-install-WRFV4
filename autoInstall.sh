@@ -707,7 +707,7 @@ getWRFHydro() {
         ulimit -s unlimited
         echo " ============================================================== "
         echo -e "\nConfigure WRF: 34.(dmpar) GNU(gfortran/gcc)" # todo more options should be choose
-        echo '34\n1' | ./configure
+        echo -e '34\n1' | ./configure
         echo " ============================================================== "
         echo -e "\nCompile WRF"
         sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wrf
