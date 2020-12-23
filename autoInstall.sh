@@ -549,7 +549,7 @@ getWRF() {
         ulimit -s unlimited
         echo " ============================================================== "
         echo -e "\nConfigure WRF: 34. (dmpar) GNU(gfortran/gcc)" # todo more options should be choose
-        echo '34\n1' | ./configure
+        echo -e '34\n1' | ./configure
         echo " ============================================================== "
         echo -e "\nCompile WRF"
         ./compile $WRF_WPS_OPENMP em_real &> $LOG_DIR/WRF_em_real.log
