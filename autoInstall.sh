@@ -548,8 +548,8 @@ getWRF() {
         ./clean -a &>/dev/null
         ulimit -s unlimited
         echo " ============================================================== "
-        echo -e "\nConfigure WRF: 33.(smpar) GNU(gfortran/gcc)" # todo more options should be choose
-        echo '33\n1' | ./configure
+        echo -e "\nConfigure WRF: 34. (dmpar) GNU(gfortran/gcc)" # todo more options should be choose
+        echo '34\n1' | ./configure
         echo " ============================================================== "
         echo -e "\nCompile WRF"
         ./compile $WRF_WPS_OPENMP em_real &> $LOG_DIR/WRF_em_real.log
@@ -594,8 +594,8 @@ getWRFplus() {
         ./clean -a &>/dev/null
         ulimit -s unlimited
         echo " ============================================================== "
-        echo -e "\nConfigure wrfplus: 17. (serial)   GNU (gfortran/gcc)"
-        echo '17' | ./configure wrfplus
+        echo -e "\nConfigure wrfplus: 18. (dmpar)   GNU (gfortran/gcc)"
+        echo '18' | ./configure wrfplus
         echo " ============================================================== "
         echo -e "\nCompile wrfplus"
         sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wrf
@@ -647,8 +647,8 @@ getWRFDA() {
         ./clean -a &>/dev/null
         ulimit -s unlimited
         echo " ============================================================== "
-        echo -e "\nConfigure WRFDA: 17. (serial)   GNU (gfortran/gcc)"
-        echo '17' | ./configure 4dvar
+        echo -e "\nConfigure WRFDA: 18. (dmpar)   GNU (gfortran/gcc)"
+        echo '18' | ./configure 4dvar
         echo -e "\nCompile WRFDA with wrfplus"
         ./compile $WRF_WPS_OPENMP all_wrfvar >& $LOG_DIR/WRFDA_compile.log
         flag=0

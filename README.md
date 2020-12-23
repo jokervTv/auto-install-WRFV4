@@ -10,13 +10,13 @@ The shell `autoInstall.sh` works well.
 - support Ubuntu, CentOS
 - support WRF
   - version: 4.2
-  - default compiler options: (smpar) GNU(gfortran/gcc)
+  - default compiler options: (dmpar) GNU(gfortran/gcc)
 - support WPS
   - version: 4.2
   - default compiler options: Linux x86_64,gfortran (serial)
 - suport WRFDA
   - version: 4.2
-  - default compiler options: (smpar) GNU(gfortran/gcc)
+  - default compiler options: (dmpar) GNU(gfortran/gcc)
   - installed WRFPLUS and WRFDA for 4DVAR run
 - suport WRFHydro
   - version: 4.2
@@ -24,7 +24,7 @@ The shell `autoInstall.sh` works well.
   - coupled
 - suport WRF-chem
   - version: 4.2
-  - default compiler options: (smpar) GNU (gfortran/gcc)
+  - default compiler options: (dmpar) GNU (gfortran/gcc)
 - change source
   - support Debian 7/8/9
   - support Ubuntu 14.04/16.06/18.04
