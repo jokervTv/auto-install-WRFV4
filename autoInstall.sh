@@ -856,10 +856,10 @@ wrfChemInstall() {
     envInstall
     getBison    $BISON_VERSION
     getFlex     $FLEX_VERSION
-    if [ "$OS_RELEASE" -eq "centos" ];then
+    if [ "$OS_RELEASE" = "centos" ];then
         WRF_CHEM_SETTING=1
         WRF_KPP_SETTING=1
-    elif [ "$OS_RELEASE" -eq "ubuntu" ];then
+    elif [ "$OS_RELEASE" = "ubuntu" ];then
         WRF_CHEM_SETTING=1
         WRF_KPP_SETTING=0
     fi
