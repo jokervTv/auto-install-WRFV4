@@ -2,9 +2,6 @@
 
 Automatically install WRF and WPS using GUN.
 
-The shell `autoInstall.sh` works well.
-`install_wrf-4_GUN.sh` is deprecated.
-
 ## Feature
 
 - support Ubuntu, CentOS
@@ -31,7 +28,7 @@ The shell `autoInstall.sh` works well.
   - support CentOS 5/6/7
 - Multi-core compilation option support
 
-**Note**:
+**Known issues**:
 
 - WRF-chem will be build without Kpp in Ubuntu, but with Kpp in CentOS.
 - WRFHydro can NOT build successfully in CentOS now.
