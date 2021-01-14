@@ -399,7 +399,7 @@ getNetCDF() {
         export LDFLAGS=-L$LIB_INSTALL_DIR/$HDF5_VERSION/lib
         export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}$LIB_INSTALL_DIR/$HDF5_VERSION/lib
         wgetSource $1
-        ./configure --prefix=$LIB_INSTALL_DIR/$NETCDF_VERSION --enable-netcdf-4 &>$LOG_DIR/$1.conf.log
+        ./configure --prefix=$LIB_INSTALL_DIR/$NETCDF_VERSION --disable-dap &>$LOG_DIR/$1.conf.log
         makeInstall $1
 
         export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$LIB_INSTALL_DIR/$1/lib
