@@ -683,6 +683,7 @@ getWRFHydro() {
         echo "export WRF_KPP=$WRF_KPP_SETTING" >> $HOME/.bashrc
         mv $HOME/.bashrc.autoInstall.bak.temp $HOME/.bashrc.autoInstall.bak
     fi
+    export WRF_HYDRO=1
     export WRFIO_NCD_LARGE_FILE_SUPPORT=1
     flag=0
     for file in $(ls $HOME/$WRF_VERSION/main/*.exe 2>/dev/null)
