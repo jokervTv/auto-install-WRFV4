@@ -21,9 +21,10 @@ DOWNLOAD_URL="https://code.aliyun.com/z1099135632/WRF_MPAS_LIB/raw/master"
 CC_VERSION="gcc"
 FC_VERSION="gfortran"
 CXX_VERSION="g++"
-MPICC_VERSION="mpicc"
-MPIFC_VERSION="mpifort"
-MPICXX_VERSION="mpic++"
+# for ubuntu 2004, there are some bug with openmpi 4.0.3, so change to mpich
+MPICC_VERSION="mpicc.mpich"
+MPIFC_VERSION="mpifort.mpich"
+MPICXX_VERSION="mpic++.mpich"
 
 # Version
 ZLIB_VERSION="zlib-1.2.11"
@@ -37,13 +38,9 @@ WPS_VERSION="WPS-4.2" #https://github.com/wrf-model/WPS
 WRF_VERSION="WRF-4.2" #https://github.com/wrf-model/WRF
 WRFplus_VERSION="WRFplus-4.2" #https://github.com/wrf-model/WRF
 WRFDA_VERSION="WRFDA-4.2" #https://github.com/wrf-model/WRF
-PIO_VERSION="pio-2.5.0" #https://github.com/NCAR/ParallelIO/
+PIO_VERSION="pio-1.7.4" #https://github.com/NCAR/ParallelIO/
 PNETCDF_VERSION="pnetcdf-1.11.2" #https://github.com/Parallel-NetCDF/PnetCDF
 MPAS_VERSION="MPAS-Model-7.0" #https://github.com/MPAS-Dev/MPAS-Model
-
-# WRF setting
-WRF_CHEM_SETTING=0
-WRF_KPP_SETTING=0
 
 # check flag
 WRF_INSTALL_FLAG=1
@@ -223,6 +220,7 @@ chooseFeatures() {
         echo "  3. WPS, WRF:em_real, WRF-hydro"
     fi
     echo "  4. WPS, WRF:em_real, WRFDA:4dvar"
+    echo "  5. MPAS-A 7.0 (Experimental)"
     echo "  0. Building Libraries Only"
     echo "=============================================="
     read read_test_flag
@@ -241,6 +239,12 @@ chooseFeatures() {
     elif [ $read_test_flag -eq 4 ];then
         WRF_INSTALL_FLAG=4
         WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=4
+    elif [ $read_test_flag -eq 5 ];then
+        WRF_INSTALL_FLAG=5
+        #WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=4
+    else
+        echo "input error: please your input"
+        exit 1
     fi
     echo $WRF_INSTALL_FLAG
 }
@@ -263,14 +267,20 @@ checkInfo() {
         echo $BISON_VERSION
         echo $FLEX_VERSION
     fi
+    if [ "$WRF_INSTALL_FLAG" -eq "5" ];then
+        echo $PIO_VERSION
+        echo $PNETCDF_VERSION
+    fi
     #echo $WRF_VERSION
     #echo $WPS_VERSION
-    #echo $PIO_VERSION
-    #echo $PNETCDF_VERSION
     echo ""
     echo "=========================================================="
     echo ""
-    if [ $WRF_INSTALL_FLAG -ne 0 ];then
+
+    if [ "$WRF_INSTALL_FLAG" -eq "5" ];then
+        echo "MPAS-atmosphere           will be installed in ${red} $HOME/MPAS-atmosphere ${plain}"
+        echo "MPAS-init_atmosphere      will be installed in ${red} $HOME/MPAS-init_atmosphere ${plain}"
+    elif [ $WRF_INSTALL_FLAG -ne 0 ];then
         echo "WPS       will be installed in ${red} $HOME/$WPS_VERSION ${plain}"
         echo "WRF       will be installed in ${red} $HOME/$WRF_VERSION ${plain}"
         if [ $WRF_INSTALL_FLAG -eq 4 ];then
@@ -399,15 +409,54 @@ getNetCDF() {
         export LDFLAGS=-L$LIB_INSTALL_DIR/$HDF5_VERSION/lib
         export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}$LIB_INSTALL_DIR/$HDF5_VERSION/lib
         wgetSource $1
+
         ./configure --prefix=$LIB_INSTALL_DIR/$NETCDF_VERSION --disable-dap &>$LOG_DIR/$1.conf.log
+
         makeInstall $1
 
         export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$LIB_INSTALL_DIR/$1/lib
         export CPPFLAGS=-I$LIB_INSTALL_DIR/$1/include
         export LDFLAGS=-L$LIB_INSTALL_DIR/$1/lib
         wgetSource $2
+
         CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
         ./configure --prefix=$LIB_INSTALL_DIR/$NETCDF_VERSION &>$LOG_DIR/$2.conf.log
+
+        makeInstall $2
+        if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
+            echo '' >> $HOME/.bashrc
+            echo "#for $1" >> $HOME/.bashrc
+            echo 'export PATH='$LIB_INSTALL_DIR'/'$1'/bin:$PATH' >> $HOME/.bashrc
+            echo "export NETCDF=$LIB_INSTALL_DIR/$NETCDF_VERSION" >> $HOME/.bashrc
+            echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$1'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+        fi
+    fi
+    export PATH=$LIB_INSTALL_DIR/$1/bin:$PATH
+    export LD_LIBRARY_PATH=$LIB_INSTALL_DIR/$1/lib:$LD_LIBRARY_PATH
+    export NETCDF=$LIB_INSTALL_DIR/$NETCDF_VERSION
+}
+
+# Install NetCDF with Parallel I/O Support
+getNetCDFwithParallel() {
+    if [ ! -s "$LIB_INSTALL_DIR/$1/include/netcdf.inc" ]; then
+        export CPPFLAGS=-I$LIB_INSTALL_DIR/$HDF5_VERSION/include
+        export LDFLAGS=-L$LIB_INSTALL_DIR/$HDF5_VERSION/lib
+        export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}$LIB_INSTALL_DIR/$HDF5_VERSION/lib
+        wgetSource $1
+
+        ./configure --prefix=$LIB_INSTALL_DIR/$NETCDF_VERSION --enable-parallel --disable-dap \
+        &>$LOG_DIR/$1.conf.log
+
+        makeInstall $1
+
+        export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$LIB_INSTALL_DIR/$1/lib
+        export CPPFLAGS=-I$LIB_INSTALL_DIR/$1/include
+        export LDFLAGS=-L$LIB_INSTALL_DIR/$1/lib
+        wgetSource $2
+
+        CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
+        ./configure --prefix=$LIB_INSTALL_DIR/$NETCDF_VERSION &>$LOG_DIR/$2.conf.log
+
         makeInstall $2
         if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
             echo '' >> $HOME/.bashrc
@@ -473,9 +522,13 @@ getPnetCDF() {
     if [ ! -s "$LIB_INSTALL_DIR/$1/bin/ncmpidiff" ];then
         wgetSource $1
         autoreconf -i
-        CC=$MPICC_VERSION CXX=$MPICXX_VERSION FC=$MPIFC_VERSION  \
-        ./configure --prefix=$LIB_INSTALL_DIR/$1        \
+
+        CC=$MPICC_VERSION CXX=$MPICXX_VERSION FC=$MPIFC_VERSION \
+        ./configure --prefix=$LIB_INSTALL_DIR/$1                \
         CFLAGS=-fPIC --enable-shared &>$LOG_DIR/$1.conf.log
+        #--enable-netcdf4           \
+        #--with-netcdf4=$LIB_INSTALL_DIR/$NETCDF_VERSION         \
+
         makeInstall $1
         if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
             echo '' >> $HOME/.bashrc
@@ -490,19 +543,32 @@ getPnetCDF() {
     export LD_LIBRARY_PATH=$LIB_INSTALL_DIR/$1/lib:$LD_LIBRARY_PATH
 }
 
-# Install PIO2
+# Install PIO
 getPIO() {
     if [ ! -s "$LIB_INSTALL_DIR/$1/lib/libpiof.a" ];then
         wgetSource $1
-        CC=$MPICC_VERSION CXX=$MPICXX_VERSION FC=$MPIFC_VERSION \
-        cmake \
-            -DNetCDF_C_PATH=$LIB_INSTALL_DIR/$NETCDF_VERSION \
-            -DNetCDF_Fortran_PATH=$LIB_INSTALL_DIR/$NETCDF_VERSION \
-            -DPnetCDF_PATH=$LIB_INSTALL_DIR/$PNETCDF_VERSION \
-            -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On \
-            -DCMAKE_INSTALL_PREFIX=$LIB_INSTALL_DIR/$1 \
-            &>$LOG_DIR/$1.conf.log
-        makeInstall $1
+
+        # some bugs in openmpi-4.0.3 in ubuntu 2004
+        #CC=mpicc.mpich CXX=mpic++.mpich FC=mpifort.mpich \
+        #cmake . \
+        #    -DNetCDF_C_PATH=$LIB_INSTALL_DIR/$NETCDF_VERSION \
+        #    -DPnetCDF_PATH=$LIB_INSTALL_DIR/$PNETCDF_VERSION \
+        #    -DPnetCDF_Fortran_INCLUDE_DIR=$LIB_INSTALL_DIR/$PNETCDF_VERSION/include \
+        #    -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On \
+        #    -DCMAKE_INSTALL_PREFIX=$LIB_INSTALL_DIR/$1 \
+        #    &>$LOG_DIR/$1.conf.log
+        #    #-DNetCDF_Fortran_PATH=$LIB_INSTALL_DIR/$NETCDF_VERSION \
+
+        export NETCDF_PATH=$LIB_INSTALL_DIR/$NETCDF_VERSION
+        export PNETCDF_PATH=$LIB_INSTALL_DIR/$PNETCDF_VERSION
+        export CPPFLAGS="-I$LIB_INSTALL_DIR/$PNETCDF_VERSION/include -I$LIB_INSTALL_DIR/$NETCDF_VERSION/include"
+        export LDFLAGS="-L$LIB_INSTALL_DIR/$PNETCDF_VERSION/lib  -L$LIB_INSTALL_DIR/$NETCDF_VERSION/lib"
+        CC=$MPICC_VERSION FC=$MPIFC_VERSION ./configure --enable-netcdf4 \
+        --with-netcdf=$LIB_INSTALL_DIR/$NETCDF_VERSION --prefix=$LIB_INSTALL_DIR/$1 &>$LOG_DIR/$1.config.log
+
+        make            &>$LOG_DIR/$1.make.log
+        make install    &>$LOG_DIR/$1.install.log
+            
         if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
             echo '' >> $HOME/.bashrc
             echo "#for $1" >> $HOME/.bashrc
@@ -788,7 +854,13 @@ checkFinishWRF() {
     echo "# END for WRF or MPAS automatic installation" >> $HOME/.bashrc
     echo "###############################################" >> $HOME/.bashrc
 
-    if [ $WRF_INSTALL_SUCCESS_FLAG -eq $WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE ];then
+    if [ "$WRF_INSTALL_FLAG" -eq "5" ];then
+        # todo : finish this feature
+        echo -e "\nAll install ${green}successful${plain}\n"
+        echo -e "\nEnjoy it\n"
+        echo -e "\n Check if the installation is correct \n"
+        rm $HOME/.bashrc.autoInstall.bak.temp
+    elif [ $WRF_INSTALL_SUCCESS_FLAG -eq $WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE ];then
         echo -e "\nAll install ${green}successful${plain}\n"
         ls -d $HOME/$WPS_VERSION --color=auto
         ls -d $HOME/$WRF_VERSION --color=auto
@@ -817,17 +889,18 @@ getMPAS() {
         cd $HOME && mv $SRC_DIR/$1 $HOME/
     fi
     cp $1 MPAS-init_atmosphere -r
-    mv $1 MPAS-atmosphere
+    cp $1 MPAS-atmosphere -r
+
+    export PIO=$LIB_INSTALL_DIR/$PIO_VERSION
+    export PNETCDF_PATH=$LIB_INSTALL_DIR/$PNETCDF_VERSION
 
     echo -e "\nCompile MPAS-init_atmosphere\n"
     cd $HOME/MPAS-init_atmosphere
-    make gfortran CORE=init_atmosphere OPENMP=true USE_PIO2=true AUTOCLEAN=true \
-    PIO=$LIB_INSTALL_DIR/$PIO_VERSION &>$LOG_DIR/MPAS-init_atmosphere.log
+    make $FC_VERSION CORE=init_atmosphere OPENMP=true &>$LOG_DIR/MPAS-init_atmosphere.log
 
     echo -e "\nCompile MPAS-atmosphere\n"
     cd $HOME/MPAS-atmosphere
-    make gfortran CORE=atmosphere OPENMP=true USE_PIO2=true AUTOCLEAN=true \
-    PIO=$LIB_INSTALL_DIR/$PIO_VERSION &>$LOG_DIR/MPAS-atmosphere.log
+    make $FC_VERSION CORE=atmosphere OPENMP=true &>$LOG_DIR/MPAS-atmosphere.log
 }
 
 envInstall() {
@@ -880,6 +953,13 @@ wrfdaInstall() {
     getWRFDA    $WRFDA_VERSION
 }
 
+mpasInstall() {
+    envInstall
+    getPnetCDF  $PNETCDF_VERSION
+    getPIO      $PIO_VERSION
+    getMPAS     $MPAS_VERSION
+}
+
 wrfFeatureInstall() {
     if   [ "$WRF_INSTALL_FLAG" -eq "0" ];then
         envInstall
@@ -891,6 +971,8 @@ wrfFeatureInstall() {
         wrfHydroInstall
     elif [ "$WRF_INSTALL_FLAG" -eq "4" ];then
         wrfdaInstall
+    elif [ "$WRF_INSTALL_FLAG" -eq "5" ];then
+        mpasInstall
     fi
 }
 
