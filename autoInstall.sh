@@ -45,6 +45,8 @@ MPAS_VERSION="MPAS-Model-7.0" #https://github.com/MPAS-Dev/MPAS-Model
 # check flag
 WRF_INSTALL_FLAG=1
 WRF_INSTALL_SUCCESS_FLAG=0
+WRF_CHEM_SETTING=0
+WRF_KPP_SETTING=0
 
 # download src of lib
 wgetSource() {
