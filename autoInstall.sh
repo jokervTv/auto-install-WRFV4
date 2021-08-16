@@ -80,10 +80,7 @@ getInfo() {
     echo " ============================================================== "
     echo " \                  Autoinstall WRF or MPAS                   / "
     echo " \     URL: https://github.com/jokervTv/auto-install-WRFV4    / "
-    echo " \                                                            / "
     echo " \              Script Created by Yongpeng Zhang              / "
-    echo " \                            and                             / "
-    echo " \              SuperUpdate.sh Created by Oldking             / "
     echo " ============================================================== "
     echo ""
 }
@@ -175,13 +172,9 @@ getTest() {
 # Change sources
 setSources() {
     echo "=============================================="
-    echo "Do you wanna change sources ?"
+    echo "Do you wanna change software sources (Recommended for Mainland China)?"
     echo ""
-    echo "  1. set sources from cdn-fastly"
-    echo "  2. set sources from USTC"
-    echo "  3. set sources from 163.com"
-    echo "  4. set sources from aliyun.com"
-    echo "  5. set sources from cdn-aws"
+    echo "  1. yes"
     echo "  0. no, nothing to change (default)"
     echo ""
     echo "If you know nothing about this, please input 0"
