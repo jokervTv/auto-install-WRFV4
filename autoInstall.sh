@@ -6,7 +6,8 @@
 #               If you have any questions, send an e-mail or open an issue.
 # Start by
 # bash -c "$(curl -fsSL https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/autoInstall.sh)"
-
+# Or (faster in China)
+# bash -c "$(curl -fsSL https://gitee.com/jokervTv/auto-install-WRFV4/raw/master/autoInstall.sh)"
 
 # System info
 OS_RELEASE="ubuntu"
@@ -187,23 +188,8 @@ setSources() {
     willness="0"
     read willness
     if  [ -n "$willness" ] ;then
-        if [ $willness -ne "0" ];then
-            wget -nv https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/superupdate.sh
-        fi
         if [ $willness -eq "1" ];then
-            sudo bash superupdate.sh
-        elif [ $willness -eq "2" ];then
-            sudo bash superupdate.sh cn
-        elif [ $willness -eq "3" ];then
-            sudo bash superupdate.sh 163
-        elif [ $willness -eq "4" ];then
-            sudo bash superupdate.sh aliyun
-        elif [ $willness -eq "5" ];then
-            sudo bash superupdate.sh aws
-        fi
-        if [ $willness -ne "0" ];then
-            sudo apt-get update
-            rm ./superupdate.sh
+            sudo -s bash -c "/bin/bash <(curl -sSL https://gitee.com/SuperManito/LinuxMirrors/raw/main/ChangeMirrors.sh)"
         fi
     fi
     echo "==============================================="

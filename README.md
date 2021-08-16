@@ -41,6 +41,12 @@ Run the following command in your terminal.
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/jokervTv/auto-install-WRFV4/master/autoInstall.sh)"
 ```
 
+Sometimes, the network to access github in China is very poor, so change gitHub to gitee:
+
+```sh
+bash -c "$(curl -fsSL https://gitee.com/jokervTv/auto-install-WRFV4/raw/master/autoInstall.sh)"
+```
+
 ## Test information
 
 The script `autoInstall.sh` has been tested in
