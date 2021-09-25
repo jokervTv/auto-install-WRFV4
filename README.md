@@ -61,6 +61,8 @@ The script `autoInstall.sh` has been tested in
 - [ ] more library download link
 - [ ] ~~more WRF/WPS version support~~
 - [ ] more WRF/WPS compiler options support
+  - [ ] onedpi
+- [ ] if the memory is less than 6G, add swap
 
 ## Authors
 
