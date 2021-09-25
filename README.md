@@ -50,11 +50,12 @@ The script `autoInstall.sh` has been tested in
 
 ## Todo
 
-- [ ] WRF-Chem(with KPP) support
-- [ ] step-by-step tutorial
-- [ ] more library download link
-- [ ] ~~more WRF/WPS version support~~
-- [ ] more WRF/WPS compiler options support
+- [x] WRF-Chem(with KPP) support
+- [ ] ~~step-by-step tutorial~~
+- [ ] ~~more library download link~~
+- [x] more WRF/WPS version support
+- [x] more WRF/WPS compiler options support
+- [ ] module file support
 
 ## Authors
 
