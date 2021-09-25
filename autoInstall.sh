@@ -399,9 +399,11 @@ getHDF5() {
             echo '' >> $HOME/.bashrc
             echo "#for $1" >> $HOME/.bashrc
             echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$1'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+            echo "export HDF5=$LIB_INSTALL_DIR/$HDF5_VERSION" >> $HOME/.bashrc
         fi
     fi
     export LD_LIBRARY_PATH=$LIB_INSTALL_DIR/$1/lib:$LD_LIBRARY_PATH
+    export HDF5=$LIB_INSTALL_DIR/$HDF5_VERSION
 }
 
 # Install netcdf
