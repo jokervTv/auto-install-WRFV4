@@ -27,6 +27,7 @@ MPIFC_VERSION="mpifort.mpich"
 MPICXX_VERSION="mpic++.mpich"
 
 # Version
+OPENMPI_VERSION="openmpi-4.1.1"
 ZLIB_VERSION="zlib-1.2.11"
 JASPER_VERSION="jasper-2.0.14"
 HDF5_VERSION="hdf5-1.10.5"
@@ -305,7 +306,7 @@ getLibrary() {
         sudo $PACKAGE_MANAGER -yqq install libpng-dev
         sudo $PACKAGE_MANAGER -yqq install tcsh samba cpp m4 quota
         sudo $PACKAGE_MANAGER -yqq install cmake make wget tar
-        sudo $PACKAGE_MANAGER -yqq install autoconf libtool mpich automake
+        sudo $PACKAGE_MANAGER -yqq install autoconf libtool automake
         sudo $PACKAGE_MANAGER -yqq install autopoint gettext
         sudo $PACKAGE_MANAGER -yqq install libcurl4-openssl-dev libcurl4
         sudo $PACKAGE_MANAGER -yqq install git
@@ -316,12 +317,10 @@ getLibrary() {
         sudo $PACKAGE_MANAGER -yqq install gcc gcc-c++ gcc-gfortran
         sudo $PACKAGE_MANAGER -yqq install cmake make wget tar
         sudo $PACKAGE_MANAGER -yqq install autoconf libtool automake
-        sudo $PACKAGE_MANAGER -yqq install mpich mpich-devel
         sudo $PACKAGE_MANAGER -yqq install gettext-devel gettext
         sudo $PACKAGE_MANAGER -yqq install libcurl-devel libcurl curl
         sudo $PACKAGE_MANAGER -yqq install git perl
     fi
-    export PATH="/usr/lib64/mpich/bin:$PATH"
 }
 
 # Creat logs and backupfiles
@@ -334,6 +333,22 @@ creatLogs() {
         echo "###############################################" >> $HOME/.bashrc
         echo "# START for WRF or MPAS automatic installation" >> $HOME/.bashrc
     fi
+}
+
+# Install openMPI
+getOpenMPI() {
+    if [ ! -s "$LIB_INSTALL_DIR/$1/lib/libmpi.so" ]; then
+        wgetSource $1
+        ./configure --prefix=$LIB_INSTALL_DIR/$1 &>$LOG_DIR/$1.conf.log
+        makeInstall $1
+        if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
+            echo '' >> $HOME/.bashrc
+            echo "#for $1" >> $HOME/.bashrc
+            echo 'export PATH='$LIB_INSTALL_DIR'/'$1'/bin:$PATH' >> $HOME/.bashrc
+            echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$1'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+        fi
+    fi
+    export LD_LIBRARY_PATH=$LIB_INSTALL_DIR/$1/lib:$LD_LIBRARY_PATH
 }
 
 # Install zlib
