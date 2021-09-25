@@ -158,6 +158,33 @@ getOpenmp() {
     fi
 }
 
+reSetEnv() {
+    echo '' >> $HOME/.bashrc
+    echo "###############################################" >> $HOME/.bashrc
+    echo "# START for WRF or MPAS automatic installation" >> $HOME/.bashrc
+    echo '' >> $HOME/.bashrc
+
+    echo "#for $ZLIB_VERSION" >> $HOME/.bashrc
+    echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$ZLIB_VERSION'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+    echo '' >> $HOME/.bashrc
+
+    echo "#for $JASPER_VERSION" >> $HOME/.bashrc
+    echo "export JASPER=$LIB_INSTALL_DIR/$JASPER_VERSION" >> $HOME/.bashrc
+    echo "export JASPERLIB=$TEMP_JASPER_LIB_DIR" >> $HOME/.bashrc
+    echo "export JASPERINC=$LIB_INSTALL_DIR/$JASPER_VERSION/include" >> $HOME/.bashrc
+    echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$JASPER_VERSION'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+
+    echo '' >> $HOME/.bashrc
+    echo "#for $HDF5_VERSION" >> $HOME/.bashrc
+    echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$HDF5_VERSION'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+
+    echo '' >> $HOME/.bashrc
+    echo "#for $NETCDF_VERSION" >> $HOME/.bashrc
+    echo 'export PATH='$LIB_INSTALL_DIR'/'$NETCDF_VERSION'/bin:$PATH' >> $HOME/.bashrc
+    echo "export NETCDF=$LIB_INSTALL_DIR/$NETCDF_VERSION" >> $HOME/.bashrc
+    echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$NETCDF_VERSION'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+}
+
 getTest() {
     echo "============================================================"
     echo "do you wanna make test or check ? (defualt: no)"
@@ -965,3 +992,11 @@ checkSystemInfo
 chooseFeatures
 wrfFeatureInstall
 checkFinishWRF
+if [ $1 == "reSetEnv" ]; then
+    reSetEnv
+else
+    checkSystemInfo
+    chooseFeatures
+    wrfFeatureInstall
+    checkFinishWRF
+fi
