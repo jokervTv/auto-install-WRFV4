@@ -171,15 +171,15 @@ getCompiler() {
     echo "Which compiler do you want to use ? (defualt: 1)"
     echo ""
     echo "  1. GUN (gcc/gfortran)"
-    echo "  2. intel oneapi"
+    echo "  2. Intel oneAPI"
     read compier_index
     if [ "$compier_index" -eq "2" ]; then
         CC_VERSION="icc"
         FC_VERSION="ifort"
         CXX_VERSION="icpc"
-        MPICC_VERSION="mpicc"
-        MPIFC_VERSION="mpifort"
-        MPICXX_VERSION="mpicxx"
+        MPICC_VERSION="mpiicc"
+        MPIFC_VERSION="mpiifort"
+        MPICXX_VERSION="mpiicpc"
     fi
 }
 
@@ -960,7 +960,6 @@ envInstall() {
     getInfo
     # checkRoot
     getDir
-    # getCompiler
     getWRFVersion
     getWPSVersion
     getCompiler
