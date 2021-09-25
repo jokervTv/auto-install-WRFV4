@@ -132,6 +132,40 @@ getDir() {
     mkdir $LIB_INSTALL_DIR
 }
 
+getWRFVersion() {
+    echo "============================================================"
+    echo "Which version of ${red}WRF${plain} do you want to use ? (defualt: 1)"
+    echo ""
+    echo "  0. 3.9.1.1"
+    echo "  1. 4.2"
+    echo "  2. 4.3"
+    read compier_index
+    if [ "$compier_index" -eq "0" ]; then
+        WRF_VERSION="WRF-3.9.1.1"
+        WRFplus_VERSION="WRFplus-3.9.1.1"
+        WRFDA_VERSION="WRFDA-3.9.1.1"
+    elif [ "$compier_index" -eq "2" ]; then
+        WRF_VERSION="WRF-4.3"
+        WRFplus_VERSION="WRFplus-4.3"
+        WRFDA_VERSION="WRFDA-4.3"
+    fi
+}
+
+getWPSVersion() {
+    echo "============================================================"
+    echo "Which version of ${red}WPS${plain} do you want to use ? (defualt: 1)"
+    echo ""
+    echo "  0. 3.9.1"
+    echo "  1. 4.2"
+    echo "  2. 4.3"
+    read compier_index
+    if [ "$compier_index" -eq "0" ]; then
+        WPS_VERSION="WPS-3.9.1"
+    elif [ "$compier_index" -eq "2" ]; then
+        WPS_VERSION="WPS-4.3"
+    fi
+}
+
 getCompiler() {
     echo "============================================================"
     echo "Which compiler do you want to use ? (defualt: 1)"
@@ -927,6 +961,9 @@ envInstall() {
     # checkRoot
     getDir
     # getCompiler
+    getWRFVersion
+    getWPSVersion
+    getCompiler
     getOpenmp
     # getTest
     setSources
