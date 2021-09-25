@@ -129,6 +129,27 @@ getDir() {
     mkdir $LIB_INSTALL_DIR
 }
 
+checkMem() {
+    echo ""
+    echo "========================================================="
+    echo "Checking the memory size:"
+
+    memTotal=`free -gt | grep "Total:" | awk '{print $2}'`
+    if [ $memTotal -lt 5 ]; then
+        echo "your memory is too small, now add swap file"
+        swapSize=$((5-$memTotal))
+        dd if=/dev/zero of=$LIB_INSTALL_DIR/swapfile bs=1G count=$swapSize
+        mkswap $LIB_INSTALL_DIR/swapfile
+        sudo chmod 0600 $LIB_INSTALL_DIR/swapfile
+        sudo swapon $LIB_INSTALL_DIR/swapfile
+    elif [ $memTotal -ge 5 ]; then
+        echo "Sufficient memory size"
+    fi
+
+    echo "========================================================="
+    echo ""
+}
+
 getCompiler() {
     echo "============================================================"
     echo "Which compiler do you want to use ? (defualt: 1)"
@@ -915,6 +936,7 @@ envInstall() {
     getInfo
     # checkRoot
     getDir
+    checkMem
     # getCompiler
     getOpenmp
     # getTest
@@ -987,11 +1009,6 @@ wrfFeatureInstall() {
 
 #-------functions end--------
 
-
-checkSystemInfo
-chooseFeatures
-wrfFeatureInstall
-checkFinishWRF
 if [ $1 == "reSetEnv" ]; then
     reSetEnv
 else
