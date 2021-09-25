@@ -28,6 +28,7 @@ MPIFC_VERSION="mpifort.mpich"
 MPICXX_VERSION="mpic++.mpich"
 
 # Version
+OPENMPI_VERSION="openmpi-4.1.1"
 ZLIB_VERSION="zlib-1.2.11"
 JASPER_VERSION="jasper-2.0.14"
 HDF5_VERSION="hdf5-1.10.5"
@@ -145,9 +146,40 @@ checkMem() {
     elif [ $memTotal -ge 5 ]; then
         echo "Sufficient memory size"
     fi
+}
 
-    echo "========================================================="
+getWRFVersion() {
+    echo "============================================================"
+    echo "Which version of ${red}WRF${plain} do you want to use ? (defualt: 1)"
     echo ""
+    echo "  0. 3.9.1.1"
+    echo "  1. 4.2"
+    echo "  2. 4.3"
+    read compier_index
+    if [ "$compier_index" -eq "0" ]; then
+        WRF_VERSION="WRF-3.9.1.1"
+        WRFplus_VERSION="WRFplus-3.9.1.1"
+        WRFDA_VERSION="WRFDA-3.9.1.1"
+    elif [ "$compier_index" -eq "2" ]; then
+        WRF_VERSION="WRF-4.3"
+        WRFplus_VERSION="WRFplus-4.3"
+        WRFDA_VERSION="WRFDA-4.3"
+    fi
+}
+
+getWPSVersion() {
+    echo "============================================================"
+    echo "Which version of ${red}WPS${plain} do you want to use ? (defualt: 1)"
+    echo ""
+    echo "  0. 3.9.1"
+    echo "  1. 4.2"
+    echo "  2. 4.3"
+    read compier_index
+    if [ "$compier_index" -eq "0" ]; then
+        WPS_VERSION="WPS-3.9.1"
+    elif [ "$compier_index" -eq "2" ]; then
+        WPS_VERSION="WPS-4.3"
+    fi
 }
 
 getCompiler() {
@@ -155,15 +187,15 @@ getCompiler() {
     echo "Which compiler do you want to use ? (defualt: 1)"
     echo ""
     echo "  1. GUN (gcc/gfortran)"
-    echo "  2. intel oneapi"
+    echo "  2. Intel oneAPI"
     read compier_index
     if [ "$compier_index" -eq "2" ]; then
         CC_VERSION="icc"
         FC_VERSION="ifort"
         CXX_VERSION="icpc"
-        MPICC_VERSION="mpicc"
-        MPIFC_VERSION="mpifort"
-        MPICXX_VERSION="mpicxx"
+        MPICC_VERSION="mpiicc"
+        MPIFC_VERSION="mpiifort"
+        MPICXX_VERSION="mpiicpc"
     fi
 }
 
@@ -332,7 +364,7 @@ getLibrary() {
         sudo $PACKAGE_MANAGER -yqq install libpng-dev
         sudo $PACKAGE_MANAGER -yqq install tcsh samba cpp m4 quota
         sudo $PACKAGE_MANAGER -yqq install cmake make wget tar
-        sudo $PACKAGE_MANAGER -yqq install autoconf libtool mpich automake
+        sudo $PACKAGE_MANAGER -yqq install autoconf libtool automake
         sudo $PACKAGE_MANAGER -yqq install autopoint gettext
         sudo $PACKAGE_MANAGER -yqq install libcurl4-openssl-dev libcurl4
         sudo $PACKAGE_MANAGER -yqq install git
@@ -343,12 +375,10 @@ getLibrary() {
         sudo $PACKAGE_MANAGER -yqq install gcc gcc-c++ gcc-gfortran
         sudo $PACKAGE_MANAGER -yqq install cmake make wget tar
         sudo $PACKAGE_MANAGER -yqq install autoconf libtool automake
-        sudo $PACKAGE_MANAGER -yqq install mpich mpich-devel
         sudo $PACKAGE_MANAGER -yqq install gettext-devel gettext
         sudo $PACKAGE_MANAGER -yqq install libcurl-devel libcurl curl
         sudo $PACKAGE_MANAGER -yqq install git perl
     fi
-    export PATH="/usr/lib64/mpich/bin:$PATH"
 }
 
 # Creat logs and backupfiles
@@ -361,6 +391,22 @@ creatLogs() {
         echo "###############################################" >> $HOME/.bashrc
         echo "# START for WRF or MPAS automatic installation" >> $HOME/.bashrc
     fi
+}
+
+# Install openMPI
+getOpenMPI() {
+    if [ ! -s "$LIB_INSTALL_DIR/$1/lib/libmpi.so" ]; then
+        wgetSource $1
+        ./configure --prefix=$LIB_INSTALL_DIR/$1 &>$LOG_DIR/$1.conf.log
+        makeInstall $1
+        if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
+            echo '' >> $HOME/.bashrc
+            echo "#for $1" >> $HOME/.bashrc
+            echo 'export PATH='$LIB_INSTALL_DIR'/'$1'/bin:$PATH' >> $HOME/.bashrc
+            echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$1'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+        fi
+    fi
+    export LD_LIBRARY_PATH=$LIB_INSTALL_DIR/$1/lib:$LD_LIBRARY_PATH
 }
 
 # Install zlib
@@ -426,9 +472,11 @@ getHDF5() {
             echo '' >> $HOME/.bashrc
             echo "#for $1" >> $HOME/.bashrc
             echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$1'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+            echo "export HDF5=$LIB_INSTALL_DIR/$HDF5_VERSION" >> $HOME/.bashrc
         fi
     fi
     export LD_LIBRARY_PATH=$LIB_INSTALL_DIR/$1/lib:$LD_LIBRARY_PATH
+    export HDF5=$LIB_INSTALL_DIR/$HDF5_VERSION
 }
 
 # Install netcdf
@@ -937,7 +985,9 @@ envInstall() {
     # checkRoot
     getDir
     checkMem
-    # getCompiler
+    getWRFVersion
+    getWPSVersion
+    getCompiler
     getOpenmp
     # getTest
     setSources

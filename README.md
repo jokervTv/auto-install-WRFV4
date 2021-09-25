@@ -56,13 +56,14 @@ The script `autoInstall.sh` has been tested in
 
 ## Todo
 
-- [ ] WRF-Chem(with KPP) support
-- [ ] step-by-step tutorial
-- [ ] more library download link
-- [ ] ~~more WRF/WPS version support~~
+- [x] WRF-Chem(with KPP) support
+- [ ] ~~step-by-step tutorial~~
+- [ ] ~~more library download link~~
+- [x] more WRF/WPS version support
 - [ ] more WRF/WPS compiler options support
-  - [ ] onedpi
-- [ ] if the memory is less than 6G, add swap
+  - [x] onedpi
+- [x] if the memory is less than 6G, add swap
+- [ ] module file support
 
 ## Authors
 
