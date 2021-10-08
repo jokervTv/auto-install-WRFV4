@@ -196,6 +196,10 @@ getCompiler() {
         MPICC_VERSION="mpiicc"
         MPIFC_VERSION="mpiifort"
         MPICXX_VERSION="mpiicpc"
+
+        export CC=$CC_VERSION
+        export CXX=$CXX_VERSION
+        export FC=$FC_VERSION
     fi
 }
 
@@ -366,6 +370,7 @@ getLibrary() {
         sudo $PACKAGE_MANAGER -yqq install cmake make wget tar
         sudo $PACKAGE_MANAGER -yqq install autoconf libtool automake
         sudo $PACKAGE_MANAGER -yqq install autopoint gettext
+        sudo $PACKAGE_MANAGER -yqq install gcc g++ gfortran
         sudo $PACKAGE_MANAGER -yqq install libcurl4-openssl-dev libcurl4
         sudo $PACKAGE_MANAGER -yqq install git
     elif [ "$OS_RELEASE" = "centos" ]; then
@@ -397,6 +402,7 @@ creatLogs() {
 getOpenMPI() {
     if [ ! -s "$LIB_INSTALL_DIR/$1/lib/libmpi.so" ]; then
         wgetSource $1
+        CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
         ./configure --prefix=$LIB_INSTALL_DIR/$1 &>$LOG_DIR/$1.conf.log
         makeInstall $1
         if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
@@ -413,6 +419,7 @@ getOpenMPI() {
 getZilb() {
     if [ ! -s "$LIB_INSTALL_DIR/$1/lib/libz.a" ]; then
         wgetSource $1
+        CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
         ./configure --prefix=$LIB_INSTALL_DIR/$1 &>$LOG_DIR/$1.conf.log
         makeInstall $1
         if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
@@ -433,6 +440,7 @@ getJasper() {
     fi
     if [ ! -s "$TEMP_JASPER_LIB_DIR/libjasper.so" ]; then
         wgetSource $1
+        CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION \
         cmake -G "Unix Makefiles" \
             -DALLOW_IN_SOURCE_BUILD=TRUE \
             -DCMAKE_BUILD_TYPE=Release \
@@ -487,6 +495,7 @@ getNetCDF() {
         export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}$LIB_INSTALL_DIR/$HDF5_VERSION/lib
         wgetSource $1
 
+        CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
         ./configure --prefix=$LIB_INSTALL_DIR/$NETCDF_VERSION --disable-dap &>$LOG_DIR/$1.conf.log
 
         makeInstall $1
@@ -521,6 +530,7 @@ getNetCDFwithParallel() {
         export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}$LIB_INSTALL_DIR/$HDF5_VERSION/lib
         wgetSource $1
 
+        CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
         ./configure --prefix=$LIB_INSTALL_DIR/$NETCDF_VERSION --enable-parallel --disable-dap \
         &>$LOG_DIR/$1.conf.log
 
@@ -987,7 +997,7 @@ envInstall() {
     checkMem
     getWRFVersion
     getWPSVersion
-    getCompiler
+    #getCompiler
     getOpenmp
     # getTest
     setSources
