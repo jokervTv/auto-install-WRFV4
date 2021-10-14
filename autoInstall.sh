@@ -383,6 +383,7 @@ getLibrary() {
         sudo $PACKAGE_MANAGER -yqq install gettext-devel gettext
         sudo $PACKAGE_MANAGER -yqq install libcurl-devel libcurl curl
         sudo $PACKAGE_MANAGER -yqq install git perl
+        sudo $PACKAGE_MANAGER -yqq install freeglut-devel freeglut
     fi
 }
 
@@ -990,6 +991,12 @@ getMPAS() {
     make $FC_VERSION CORE=atmosphere OPENMP=true &>$LOG_DIR/MPAS-atmosphere.log
 }
 
+getRegRM4() {
+    wget https://github.com/ictp-esp/RegCM/archive/refs/tags/4.7.9.tar.gz
+}
+
+# ---------------------------------------
+
 envInstall() {
     getInfo
     # checkRoot
@@ -1004,6 +1011,7 @@ envInstall() {
     checkInfo
     getLibrary
     creatLogs
+    getOpenMPI  $OPENMPI_VERSION
     getZilb     $ZLIB_VERSION
     getJasper   $JASPER_VERSION
     getHDF5     $HDF5_VERSION
