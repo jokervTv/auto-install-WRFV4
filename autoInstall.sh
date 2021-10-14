@@ -854,7 +854,7 @@ getWRFHydro() {
             fi
         fi
         cd $HOME/$1
-        bash hydro/template/setEnvar.sh
+        source hydro/template/setEnvar.sh
         echo " ============================================================== "
         echo -e "\nClean\n"
         ./clean -a &>/dev/null
