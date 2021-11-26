@@ -15,10 +15,12 @@ PACKAGE_MANAGER="apt-get"
 MAKE_OPENMP="-j4"
 WRF_WPS_OPENMP='-j 4'
 TEST_FLAG="0"
+SERVER_FLAG="0"
 LIB_INSTALL_DIR="$HOME/.WRF_MPAS_LIB"
 LOG_DIR="$HOME/log-wrf-mpas"
 SRC_DIR="$HOME/src-wrf-mpas"
 DOWNLOAD_URL="https://code.aliyun.com/z1099135632/WRF_MPAS_LIB/raw/master"
+
 CC_VERSION="gcc"
 FC_VERSION="gfortran"
 CXX_VERSION="g++"
@@ -584,7 +586,7 @@ getFlex() {
     if [ ! -s "$LIB_INSTALL_DIR/$1/bin/flex" ];then
         wgetSource $1
         ./autogen.sh &>$LOG_DIR/$1.autogen.log
-        # todo Note: version 2.6.5
+        # TODO Note: version 2.6.5
         # CFLAGS='-g -O2 -D_GNU_SOURCE' because a bug of version 2.6.4
         # and will be fixed in 2.6.5
         CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
@@ -668,7 +670,7 @@ getPIO() {
     export LD_LIBRARY_PATH=$LIB_INSTALL_DIR/$1/lib:$LD_LIBRARY_PATH
 }
 
-# Install WRF
+# Install WRF/WRF-chem
 getWRF() {
     if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
         echo '' >> $HOME/.bashrc
@@ -993,7 +995,7 @@ checkFinishWRF() {
     echo "###############################################" >> $HOME/.bashrc
 
     if [ "$WRF_INSTALL_FLAG" -eq "5" ];then
-        # todo : finish this feature
+        # TODO : finish this feature
         echo -e "\nAll install ${green}successful${plain}\n"
         echo -e "\nEnjoy it\n"
         echo -e "\n Check if the installation is correct \n"
@@ -1051,15 +1053,17 @@ envInstall() {
     getInfo
     # checkRoot
     getDir
-    checkMem
     getWRFVersion
     getWPSVersion
-    #getCompiler
+    getCompiler
     getOpenmp
     # getTest
     setSources
     checkInfo
-    getLibrary
+    if [ "$SERVER_FLAG" == "0"];then
+        checkMem
+        getLibrary
+    fi
     creatLogs
     getOpenMPI  $OPENMPI_VERSION
     getZilb     $ZLIB_VERSION
@@ -1127,8 +1131,14 @@ wrfFeatureInstall() {
 
 #-------functions end--------
 
-if [ $1 == "reSetEnv" ]; then
+if [ "$1" == "resetEnv" ]; then
     reSetEnv
+elif [ "$1" == "server" ]; then
+    SERVER_FLAG="1"
+    checkSystemInfo
+    chooseFeatures
+    wrfFeatureInstall
+    checkFinishWRF
 else
     checkSystemInfo
     chooseFeatures
