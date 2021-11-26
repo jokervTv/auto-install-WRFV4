@@ -701,10 +701,20 @@ getWRF() {
         echo -e "\nClean\n"
         ./clean -a &>/dev/null
         ulimit -s unlimited
-        echo " ============================================================== "
-        echo -e "\nConfigure WRF: 34. (dmpar) GNU(gfortran/gcc)" # todo more options should be choose
-        echo -e '34\n1' | ./configure
-        echo " ============================================================== "
+
+        if ("$CC_VERSION" == "gcc");then
+            echo " ============================================================== "
+            echo -e "\nConfigure WRF: 34. (dmpar) GNU(gfortran/gcc)"
+            echo -e '34\n1' | ./configure
+            echo " ============================================================== "
+        elif ("$CC_VERSION" == "icc");then
+            echo " ============================================================== "
+            echo -e "\nConfigure WRF: 15. (dmpar) INTEL (ifort/icc)"
+            echo -e '15\n1' | ./configure
+            echo " ============================================================== "
+        fi
+        sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp -lpthread -liomp5/g' ./configure.wrf
+        
         echo -e "\nCompile WRF"
         ./compile $WRF_WPS_OPENMP em_real &> $LOG_DIR/WRF_em_real.log
         flag=0
@@ -747,10 +757,19 @@ getWRFplus() {
         echo -e "\nClean\n"
         ./clean -a &>/dev/null
         ulimit -s unlimited
-        echo " ============================================================== "
-        echo -e "\nConfigure wrfplus: 18. (dmpar)   GNU (gfortran/gcc)"
-        echo '18' | ./configure wrfplus
-        echo " ============================================================== "
+
+        if ("$CC_VERSION" == "gcc");then
+            echo " ============================================================== "
+            echo -e "\nConfigure wrfplus: 18. (dmpar)   GNU (gfortran/gcc)"
+            echo '18' | ./configure wrfplus
+            echo " ============================================================== "
+        elif ("$CC_VERSION" == "icc");then
+            echo " ============================================================== "
+            echo -e "\nConfigure wrfplus:  8. (dmpar)   INTEL (ifort/icc)"
+            echo '8' | ./configure wrfplus
+            echo " ============================================================== "
+        fi
+
         echo -e "\nCompile wrfplus"
         sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wrf
         ./compile $WRF_WPS_OPENMP wrfplus &> $LOG_DIR/WRFplus_compile.log
@@ -800,9 +819,19 @@ getWRFDA() {
         echo -e "\nClean\n"
         ./clean -a &>/dev/null
         ulimit -s unlimited
-        echo " ============================================================== "
-        echo -e "\nConfigure WRFDA: 18. (dmpar)   GNU (gfortran/gcc)"
-        echo '18' | ./configure 4dvar
+
+        if ("$CC_VERSION" == "gcc");then
+            echo " ============================================================== "
+            echo -e "\nConfigure WRFDA: 18. (dmpar)   GNU (gfortran/gcc)"
+            echo '18' | ./configure 4dvar
+            echo " ============================================================== "
+        elif ("$CC_VERSION" == "icc");then
+            echo " ============================================================== "
+            echo -e "\nConfigure WRFDA:  8. (dmpar)    INTEL (ifort/icc)"
+            echo '8' | ./configure 4dvar
+            echo " ============================================================== "
+        fi
+
         echo -e "\nCompile WRFDA with wrfplus"
         ./compile $WRF_WPS_OPENMP all_wrfvar >& $LOG_DIR/WRFDA_compile.log
         flag=0
@@ -860,11 +889,19 @@ getWRFHydro() {
         echo -e "\nClean\n"
         ./clean -a &>/dev/null
         ulimit -s unlimited
-        echo " ============================================================== "
-        echo -e "\nConfigure WRF: 34.(dmpar) GNU(gfortran/gcc)" # todo more options should be choose
-        echo -e '34\n1' | ./configure
-        echo " ============================================================== "
-        echo -e "\nCompile WRF"
+
+        if ("$CC_VERSION" == "gcc");then
+            echo " ============================================================== "
+            echo -e "\nConfigure WRF: 34. (dmpar) GNU(gfortran/gcc)"
+            echo -e '34\n1' | ./configure
+            echo " ============================================================== "
+        elif ("$CC_VERSION" == "icc");then
+            echo " ============================================================== "
+            echo -e "\nConfigure WRF: 15. (dmpar) INTEL (ifort/icc)"
+            echo -e '15\n1' | ./configure
+            echo " ============================================================== "
+        fi
+
         sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wrf
         ./compile $WRF_WPS_OPENMP em_real &> $LOG_DIR/WRF_em_real.log
         flag=0
@@ -909,12 +946,25 @@ getWPS() {
         echo " ============================================================== "
         echo -e "\nClean\n"
         ./clean -a &>/dev/null
-        echo " ============================================================== "
-        echo -e "\nConfigure WPS: 1. Linux x86_64,gfortran (serial)"
-        sed -i 's/standard_wrf_dirs="WRF WRF-4.0.3 WRF-4.0.2 WRF-4.0.1 WRF-4.0 WRFV3 WRF-4.1.2"/standard_wrf_dirs="WRF WRF-4.2 WRF-4.0.3 WRF-4.0.2 WRF-4.0.1 WRF-4.0 WRFV3 WRF-4.1.2"/g' ./configure
-        echo '1' | ./configure &>$LOG_DIR/$1.config.log
-        sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wps
-        echo " ============================================================== "
+
+        sed -i 's/standard_wrf_dirs="WRF WRF-4.0.3 WRF-4.0.2 WRF-4.0.1 WRF-4.0 WRFV3 WRF-4.1.2"/standard_wrf_dirs="WRF WRF-4.2 WRF-4.3 WRF-4.0.3 WRF-4.0.2 WRF-4.0.1 WRF-4.0 WRFV3 WRF-4.1.2"/g' ./configure
+
+        if ("$CC_VERSION" == "gcc");then
+            echo " ============================================================== "
+            echo -e "\nConfigure WPS: 1. Linux x86_64,gfortran (serial)"
+            echo '1' | ./configure &>$LOG_DIR/$1.config.log
+            echo " ============================================================== "
+            sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wps
+        elif ("$CC_VERSION" == "icc");then
+            echo " ============================================================== "
+            echo -e "\nConfigure WPS: 19. Linux x86_64, Intel compiler (dmpar)"
+            echo '19' | ./configure &>$LOG_DIR/$1.config.log
+            echo " ============================================================== "
+            sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp -lpthread -liomp5/g' ./configure.wps
+            sed -i 's/DM_FC               = mpifort/DM_FC               = mpiifort/g' ./configure.wps
+            sed -i 's/DM_CC               = mpicc/DM_CC               = mpiicc/g' ./configure.wps
+        fi
+
         echo -e "\nCompile WPS"
         ./compile &> $LOG_DIR/$1.compile.log
         flag=0
