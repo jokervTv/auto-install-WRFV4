@@ -158,14 +158,16 @@ getWRFVersion() {
     echo "  1. 4.2"
     echo "  2. 4.3"
     read compier_index
-    if [ $compier_index -eq 0 ]; then
-        WRF_VERSION="WRF-3.9.1.1"
-        WRFplus_VERSION="WRFplus-3.9.1.1"
-        WRFDA_VERSION="WRFDA-3.9.1.1"
-    elif [ $compier_index -eq 2 ]; then
-        WRF_VERSION="WRF-4.3"
-        WRFplus_VERSION="WRFplus-4.3"
-        WRFDA_VERSION="WRFDA-4.3"
+    if [ -n "$compier_index" ]; then
+        if [ $compier_index -eq 0 ]; then
+            WRF_VERSION="WRF-3.9.1.1"
+            WRFplus_VERSION="WRFplus-3.9.1.1"
+            WRFDA_VERSION="WRFDA-3.9.1.1"
+        elif [ $compier_index -eq 2 ]; then
+            WRF_VERSION="WRF-4.3"
+            WRFplus_VERSION="WRFplus-4.3"
+            WRFDA_VERSION="WRFDA-4.3"
+        fi
     fi
 }
 
@@ -177,10 +179,12 @@ getWPSVersion() {
     echo "  1. 4.2"
     echo "  2. 4.3"
     read compier_index
-    if [ $compier_index -eq 0 ]; then
-        WPS_VERSION="WPS-3.9.1"
-    elif [ $compier_index -eq 2 ]; then
-        WPS_VERSION="WPS-4.3"
+    if [ -n "$compier_index" ]; then
+        if [ $compier_index -eq 0 ]; then
+            WPS_VERSION="WPS-3.9.1"
+        elif [ $compier_index -eq 2 ]; then
+            WPS_VERSION="WPS-4.3"
+        fi
     fi
 }
 
@@ -191,29 +195,33 @@ getCompiler() {
     echo "  1. GUN (gcc/gfortran)"
     echo "  2. Intel oneAPI"
     read compier_index
-    if [ $compier_index -eq 2 ]; then
-        CC_VERSION="icc"
-        FC_VERSION="ifort"
-        CXX_VERSION="icpc"
-        MPICC_VERSION="mpiicc"
-        MPIFC_VERSION="mpiifort"
-        MPICXX_VERSION="mpiicpc"
+    if [ -n "$compier_index" ]; then
+        if [ $compier_index -eq 2 ]; then
+            CC_VERSION="icc"
+            FC_VERSION="ifort"
+            CXX_VERSION="icpc"
+            MPICC_VERSION="mpiicc"
+            MPIFC_VERSION="mpiifort"
+            MPICXX_VERSION="mpiicpc"
 
-        export CC=$CC_VERSION
-        export CXX=$CXX_VERSION
-        export FC=$FC_VERSION
+            export CC=$CC_VERSION
+            export CXX=$CXX_VERSION
+            export FC=$FC_VERSION
+        fi
     fi
-}
+    }
 
 getOpenmp() {
     echo "============================================================"
     echo "How many physical cores do you wan to use ? (defualt: 4)"
-    echo "If you know nothing about this, please input 0"
+    echo "If you know nothing about this, please input 0 or just hit enter."
     echo ""
     read cores_number
-    if [ $cores_number -ne 0 ]; then
-        MAKE_OPENMP="-j$cores_number"
-        WRF_WPS_OPENMP="-j $cores_number"
+    if [ -n "$cores_number" ]; then
+        if [ $cores_number -ne 0 ]; then
+            MAKE_OPENMP="-j$cores_number"
+            WRF_WPS_OPENMP="-j $cores_number"
+        fi
     fi
 }
 
@@ -250,8 +258,10 @@ getTest() {
     echo "0.no"
     echo "1.yes"
     read read_test_flag
-    if [ $read_test_flag -eq 1 ];then
-        TEST_FLAG="$read_test_flag"
+    if [ -n "$read_test_flag" ]; then
+        if [ $read_test_flag -eq 1 ];then
+            TEST_FLAG="$read_test_flag"
+        fi
     fi
 }
 
@@ -310,7 +320,7 @@ chooseFeatures() {
         WRF_INSTALL_FLAG=5
         #WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=4
     else
-        echo "input error: please your input"
+        echo "input error: please input"
         exit 1
     fi
     echo $WRF_INSTALL_FLAG
