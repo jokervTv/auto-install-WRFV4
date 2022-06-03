@@ -19,7 +19,7 @@ SERVER_FLAG="0"
 LIB_INSTALL_DIR="$HOME/.WRF_MPAS_LIB"
 LOG_DIR="$HOME/log-wrf-mpas"
 SRC_DIR="$HOME/src-wrf-mpas"
-DOWNLOAD_URL="https://code.aliyun.com/z1099135632/WRF_MPAS_LIB/raw/master"
+DOWNLOAD_URL="http://rckzwbqep.bkt.clouddn.com"
 
 CC_VERSION="gcc"
 FC_VERSION="gfortran"
