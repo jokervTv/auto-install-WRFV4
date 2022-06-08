@@ -19,7 +19,7 @@ SERVER_FLAG="0"
 LIB_INSTALL_DIR="$HOME/.WRF_MPAS_LIB"
 LOG_DIR="$HOME/log-wrf-mpas"
 SRC_DIR="$HOME/src-wrf-mpas"
-DOWNLOAD_URL="https://code.aliyun.com/z1099135632/WRF_MPAS_LIB/raw/master"
+DOWNLOAD_URL="http://rckzwbqep.bkt.clouddn.com"
 
 CC_VERSION="gcc"
 FC_VERSION="gfortran"
@@ -138,14 +138,14 @@ checkMem() {
     echo "Checking the memory size:"
 
     memTotal=`free -gt | grep "Total:" | awk '{print $2}'`
-    if [ $memTotal -lt 5 ]; then
+    if [[ $memTotal -lt 5 ]]; then
         echo "your memory is too small, now add swap file"
         swapSize=$((5-$memTotal))
         dd if=/dev/zero of=$LIB_INSTALL_DIR/swapfile bs=1G count=$swapSize
         mkswap $LIB_INSTALL_DIR/swapfile
         sudo chmod 0600 $LIB_INSTALL_DIR/swapfile
         sudo swapon $LIB_INSTALL_DIR/swapfile
-    elif [ $memTotal -ge 5 ]; then
+    elif [[ $memTotal -ge 5 ]]; then
         echo "Sufficient memory size"
     fi
 }
@@ -158,14 +158,16 @@ getWRFVersion() {
     echo "  1. 4.2"
     echo "  2. 4.3"
     read compier_index
-    if [ "$compier_index" -eq "0" ]; then
-        WRF_VERSION="WRF-3.9.1.1"
-        WRFplus_VERSION="WRFplus-3.9.1.1"
-        WRFDA_VERSION="WRFDA-3.9.1.1"
-    elif [ "$compier_index" -eq "2" ]; then
-        WRF_VERSION="WRF-4.3"
-        WRFplus_VERSION="WRFplus-4.3"
-        WRFDA_VERSION="WRFDA-4.3"
+    if [ -n "$compier_index" ]; then
+        if [[ $compier_index -eq 0 ]]; then
+            WRF_VERSION="WRF-3.9.1.1"
+            WRFplus_VERSION="WRFplus-3.9.1.1"
+            WRFDA_VERSION="WRFDA-3.9.1.1"
+        elif [[ $compier_index -eq 2 ]]; then
+            WRF_VERSION="WRF-4.3"
+            WRFplus_VERSION="WRFplus-4.3"
+            WRFDA_VERSION="WRFDA-4.3"
+        fi
     fi
 }
 
@@ -177,10 +179,12 @@ getWPSVersion() {
     echo "  1. 4.2"
     echo "  2. 4.3"
     read compier_index
-    if [ "$compier_index" -eq "0" ]; then
-        WPS_VERSION="WPS-3.9.1"
-    elif [ "$compier_index" -eq "2" ]; then
-        WPS_VERSION="WPS-4.3"
+    if [ -n "$compier_index" ]; then
+        if [[ $compier_index -eq 0 ]]; then
+            WPS_VERSION="WPS-3.9.1"
+        elif [[ $compier_index -eq 2 ]]; then
+            WPS_VERSION="WPS-4.3"
+        fi
     fi
 }
 
@@ -191,29 +195,33 @@ getCompiler() {
     echo "  1. GUN (gcc/gfortran)"
     echo "  2. Intel oneAPI"
     read compier_index
-    if [ "$compier_index" -eq "2" ]; then
-        CC_VERSION="icc"
-        FC_VERSION="ifort"
-        CXX_VERSION="icpc"
-        MPICC_VERSION="mpiicc"
-        MPIFC_VERSION="mpiifort"
-        MPICXX_VERSION="mpiicpc"
+    if [ -n "$compier_index" ]; then
+        if [[ $compier_index -eq 2 ]]; then
+            CC_VERSION="icc"
+            FC_VERSION="ifort"
+            CXX_VERSION="icpc"
+            MPICC_VERSION="mpiicc"
+            MPIFC_VERSION="mpiifort"
+            MPICXX_VERSION="mpiicpc"
 
-        export CC=$CC_VERSION
-        export CXX=$CXX_VERSION
-        export FC=$FC_VERSION
+            export CC=$CC_VERSION
+            export CXX=$CXX_VERSION
+            export FC=$FC_VERSION
+        fi
     fi
-}
+    }
 
 getOpenmp() {
     echo "============================================================"
     echo "How many physical cores do you wan to use ? (defualt: 4)"
-    echo "If you know nothing about this, please input 0"
+    echo "If you know nothing about this, please input 0 or just hit enter."
     echo ""
     read cores_number
-    if [ "$cores_number" -ne "0" ]; then
-        MAKE_OPENMP="-j$cores_number"
-        WRF_WPS_OPENMP="-j $cores_number"
+    if [ -n "$cores_number" ]; then
+        if [ $cores_number -ne 0 ]; then
+            MAKE_OPENMP="-j$cores_number"
+            WRF_WPS_OPENMP="-j $cores_number"
+        fi
     fi
 }
 
@@ -250,8 +258,10 @@ getTest() {
     echo "0.no"
     echo "1.yes"
     read read_test_flag
-    if [ "$read_test_flag" -eq "1" ];then
-        TEST_FLAG="$read_test_flag"
+    if [ -n "$read_test_flag" ]; then
+        if [[ $read_test_flag -eq 1 ]];then
+            TEST_FLAG="$read_test_flag"
+        fi
     fi
 }
 
@@ -267,7 +277,7 @@ setSources() {
     willness="0"
     read willness
     if  [ -n "$willness" ] ;then
-        if [ $willness -eq "1" ];then
+        if [[ $willness -eq 1 ]];then
             sudo -s bash -c "/bin/bash <(curl -sSL https://gitee.com/SuperManito/LinuxMirrors/raw/main/ChangeMirrors.sh)"
         fi
     fi
@@ -279,10 +289,10 @@ chooseFeatures() {
     echo "Which option do you wanna choose ?"
     echo ""
     echo "  1. WPS, WRF:em_real"
-    if [ "$OS_RELEASE" = "centos" ];then
+    if [ "$OS_RELEASE" == "centos" ];then
         echo "  2. WPS, WRF:em_real, WRF-chem (with Kpp)"
         echo "  3. WPS, WRF:em_real, WRF-hydro (support soon, NOT currently supported)"
-    elif [ "$OS_RELEASE" = "ubuntu" ];then
+    elif [ "$OS_RELEASE" == "ubuntu" ];then
         echo "  2. WPS, WRF:em_real, WRF-chem (without Kpp)"
         echo "  3. WPS, WRF:em_real, WRF-hydro"
     fi
@@ -310,7 +320,7 @@ chooseFeatures() {
         WRF_INSTALL_FLAG=5
         #WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=4
     else
-        echo "input error: please your input"
+        echo "input error: please input"
         exit 1
     fi
     echo $WRF_INSTALL_FLAG
@@ -330,11 +340,11 @@ checkInfo() {
     echo $HDF5_VERSION
     echo $NETCDF_VERSION
     echo $NETCDF_FORTRAN_VERSION
-    if [ "$WRF_INSTALL_FLAG" -eq "2" ];then
+    if [[ $WRF_INSTALL_FLAG -eq 2 ]];then
         echo $BISON_VERSION
         echo $FLEX_VERSION
     fi
-    if [ "$WRF_INSTALL_FLAG" -eq "5" ];then
+    if [[ $WRF_INSTALL_FLAG -eq 5 ]];then
         echo $PIO_VERSION
         echo $PNETCDF_VERSION
     fi
@@ -344,13 +354,13 @@ checkInfo() {
     echo "=========================================================="
     echo ""
 
-    if [ "$WRF_INSTALL_FLAG" -eq "5" ];then
+    if [[ $WRF_INSTALL_FLAG -eq 5 ]];then
         echo "MPAS-atmosphere           will be installed in ${red} $HOME/MPAS-atmosphere ${plain}"
         echo "MPAS-init_atmosphere      will be installed in ${red} $HOME/MPAS-init_atmosphere ${plain}"
-    elif [ $WRF_INSTALL_FLAG -ne 0 ];then
+    elif [[ $WRF_INSTALL_FLAG -ne 0 ]];then
         echo "WPS       will be installed in ${red} $HOME/$WPS_VERSION ${plain}"
         echo "WRF       will be installed in ${red} $HOME/$WRF_VERSION ${plain}"
-        if [ $WRF_INSTALL_FLAG -eq 4 ];then
+        if [[ $WRF_INSTALL_FLAG -eq 4 ]];then
             echo "WPFplus   will be installed in ${red} $HOME/$WRFplus_VERSION ${plain}"
             echo "WPFDA     will be installed in ${red} $HOME/$WRFDA_VERSION ${plain}"
         fi
@@ -476,7 +486,7 @@ getHDF5() {
             ./configure                                 \
                 --prefix=$LIB_INSTALL_DIR/$HDF5_VERSION     \
                 --with-zlib=$LIB_INSTALL_DIR/$ZLIB_VERSION  \
-                --enable-fortran --enable-cxx \
+                --enable-fortran --enable-cxx --enable-parallel \
                 &>$LOG_DIR/$1.conf.log
             makeInstall $1
         if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
@@ -712,7 +722,7 @@ getWRF() {
     do
         flag=$(( $flag + 1 ))
     done
-    if [ $flag -ne 4 ];then
+    if [[ $flag -ne 4 ]];then
         echo "Download WRF"
         if [ ! -s $HOME/$WRF_VERSION/configure ];then
             if [ ! -s $SRC_DIR/$WRF_VERSION.tar.gz ];then
@@ -728,12 +738,12 @@ getWRF() {
         ./clean -a &>/dev/null
         ulimit -s unlimited
 
-        if ("$CC_VERSION" == "gcc");then
+        if [ "$CC_VERSION" == "gcc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure WRF: 34. (dmpar) GNU(gfortran/gcc)"
             echo -e '34\n1' | ./configure
             echo " ============================================================== "
-        elif ("$CC_VERSION" == "icc");then
+        elif [ "$CC_VERSION" == "icc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure WRF: 15. (dmpar) INTEL (ifort/icc)"
             echo -e '15\n1' | ./configure
@@ -748,7 +758,7 @@ getWRF() {
         do
             flag=$(( $flag + 1 ))
         done
-        if [ $flag -eq 4 ];then
+        if [[ $flag -eq 4 ]];then
             echo -e "\n\nWRF install ${green}successful${plain}\n"
             WRF_INSTALL_SUCCESS_FLAG=$(( $WRF_INSTALL_SUCCESS_FLAG + 1 ))
         else
@@ -768,7 +778,7 @@ getWRFplus() {
     do
         flag=$(( $flag + 1 ))
     done
-    if [ $flag -ne 1 ];then
+    if [[ $flag -ne 1 ]];then
         echo "Install WRFplus"
         if [ ! -s $HOME/$WRFplus_VERSION/configure ];then
             if [ ! -s $SRC_DIR/$WRF_VERSION.tar.gz ];then
@@ -784,12 +794,12 @@ getWRFplus() {
         ./clean -a &>/dev/null
         ulimit -s unlimited
 
-        if ("$CC_VERSION" == "gcc");then
+        if [ "$CC_VERSION" == "gcc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure wrfplus: 18. (dmpar)   GNU (gfortran/gcc)"
             echo '18' | ./configure wrfplus
             echo " ============================================================== "
-        elif ("$CC_VERSION" == "icc");then
+        elif [ "$CC_VERSION" == "icc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure wrfplus:  8. (dmpar)   INTEL (ifort/icc)"
             echo '8' | ./configure wrfplus
@@ -806,7 +816,7 @@ getWRFplus() {
         do
             flag=$(( $flag + 1 ))
         done
-        if [ $flag -eq 1 ];then
+        if [[ $flag -eq 1 ]];then
             echo -e "\n\nWRFDA install ${green}successful${plain}\n"
             WRF_INSTALL_SUCCESS_FLAG=$(( $WRF_INSTALL_SUCCESS_FLAG + 1 ))
         else
@@ -830,7 +840,7 @@ getWRFDA() {
     do
         flag=$(( $flag + 1 ))
     done
-    if [ $flag -ne 44 ];then
+    if [[ $flag -ne 44 ]];then
         echo "Install WRFDA"
         if [ ! -s $HOME/$WRFDA_VERSION/configure ];then
             if [ ! -s $SRC_DIR/$WRF_VERSION.tar.gz ];then
@@ -846,12 +856,12 @@ getWRFDA() {
         ./clean -a &>/dev/null
         ulimit -s unlimited
 
-        if ("$CC_VERSION" == "gcc");then
+        if [ "$CC_VERSION" == "gcc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure WRFDA: 18. (dmpar)   GNU (gfortran/gcc)"
             echo '18' | ./configure 4dvar
             echo " ============================================================== "
-        elif ("$CC_VERSION" == "icc");then
+        elif [ "$CC_VERSION" == "icc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure WRFDA:  8. (dmpar)    INTEL (ifort/icc)"
             echo '8' | ./configure 4dvar
@@ -869,7 +879,7 @@ getWRFDA() {
         do
             flag=$(( $flag + 1 ))
         done
-        if [ $flag -eq 44 ];then
+        if [[ $flag -eq 44 ]];then
             echo -e "\n\nWRFDA install ${green}successful${plain}\n"
             WRF_INSTALL_SUCCESS_FLAG=$(( $WRF_INSTALL_SUCCESS_FLAG + 1 ))
         else
@@ -899,7 +909,7 @@ getWRFHydro() {
     do
         flag=$(( $flag + 1 ))
     done
-    if [ $flag -ne 4 ];then
+    if [[ $flag -ne 4 ]];then
         echo "Download WRF"
         if [ ! -s $HOME/$WRF_VERSION/configure ];then
             if [ ! -s $SRC_DIR/$WRF_VERSION.tar.gz ];then
@@ -916,12 +926,12 @@ getWRFHydro() {
         ./clean -a &>/dev/null
         ulimit -s unlimited
 
-        if ("$CC_VERSION" == "gcc");then
+        if [ "$CC_VERSION" == "gcc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure WRF: 34. (dmpar) GNU(gfortran/gcc)"
             echo -e '34\n1' | ./configure
             echo " ============================================================== "
-        elif ("$CC_VERSION" == "icc");then
+        elif [ "$CC_VERSION" == "icc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure WRF: 15. (dmpar) INTEL (ifort/icc)"
             echo -e '15\n1' | ./configure
@@ -935,7 +945,7 @@ getWRFHydro() {
         do
             flag=$(( $flag + 1 ))
         done
-        if [ $flag -eq 4 ];then
+        if [[ $flag -eq 4 ]];then
             echo -e "\n\nWRF install ${green}successful${plain}\n"
             WRF_INSTALL_SUCCESS_FLAG=$(( $WRF_INSTALL_SUCCESS_FLAG + 1 ))
         else
@@ -960,7 +970,7 @@ getWPS() {
     do
         flag=$(( $flag + 1 ))
     done
-    if [ $flag -ne 11 ];then
+    if [[ $flag -ne 11 ]];then
         echo -e "\nInstall WPS"
         if [ ! -s $HOME/$WPS_VERSION/configure ];then
             if [ ! -s $SRC_DIR/$WPS_VERSION.tar.gz ];then
@@ -975,13 +985,13 @@ getWPS() {
 
         sed -i 's/standard_wrf_dirs="WRF WRF-4.0.3 WRF-4.0.2 WRF-4.0.1 WRF-4.0 WRFV3 WRF-4.1.2"/standard_wrf_dirs="WRF WRF-4.2 WRF-4.3 WRF-4.0.3 WRF-4.0.2 WRF-4.0.1 WRF-4.0 WRFV3 WRF-4.1.2"/g' ./configure
 
-        if ("$CC_VERSION" == "gcc");then
+        if [ "$CC_VERSION" == "gcc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure WPS: 1. Linux x86_64,gfortran (serial)"
             echo '1' | ./configure &>$LOG_DIR/$1.config.log
             echo " ============================================================== "
             sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wps
-        elif ("$CC_VERSION" == "icc");then
+        elif [ "$CC_VERSION" == "icc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure WPS: 19. Linux x86_64, Intel compiler (dmpar)"
             echo '19' | ./configure &>$LOG_DIR/$1.config.log
@@ -1002,7 +1012,7 @@ getWPS() {
         do
             flag=$(( $flag + 1 ))
         done
-        if [ $flag -eq 11 ];then
+        if [[ $flag -eq 11 ]];then
             echo -e "\n\nWPS install ${green}successful${plain}\n"
             WRF_INSTALL_SUCCESS_FLAG=$(( $WRF_INSTALL_SUCCESS_FLAG + 1 ))
         else
@@ -1084,7 +1094,7 @@ envInstall() {
     # getTest
     setSources
     checkInfo
-    if [ "$SERVER_FLAG" == "0"];then
+    if [ $SERVER_FLAG -eq 0 ];then
         checkMem
         getLibrary
     fi
@@ -1106,10 +1116,10 @@ wrfChemInstall() {
     envInstall
     getBison    $BISON_VERSION
     getFlex     $FLEX_VERSION
-    if [ "$OS_RELEASE" = "centos" ];then
+    if [ "$OS_RELEASE" == "centos" ];then
         WRF_CHEM_SETTING=1
         WRF_KPP_SETTING=1
-    elif [ "$OS_RELEASE" = "ubuntu" ];then
+    elif [ "$OS_RELEASE" == "ubuntu" ];then
         WRF_CHEM_SETTING=1
         WRF_KPP_SETTING=0
     fi
@@ -1137,17 +1147,17 @@ mpasInstall() {
 }
 
 wrfFeatureInstall() {
-    if   [ "$WRF_INSTALL_FLAG" -eq "0" ];then
+    if   [[ $WRF_INSTALL_FLAG -eq 0 ]];then
         envInstall
-    elif [ "$WRF_INSTALL_FLAG" -eq "1" ];then
+    elif [[ $WRF_INSTALL_FLAG -eq 1 ]];then
         wrfInstall
-    elif [ "$WRF_INSTALL_FLAG" -eq "2" ];then
+    elif [[ $WRF_INSTALL_FLAG -eq 2 ]];then
         wrfChemInstall
-    elif [ "$WRF_INSTALL_FLAG" -eq "3" ];then
+    elif [[ $WRF_INSTALL_FLAG -eq 3 ]];then
         wrfHydroInstall
-    elif [ "$WRF_INSTALL_FLAG" -eq "4" ];then
+    elif [[ $WRF_INSTALL_FLAG -eq 4 ]];then
         wrfdaInstall
-    elif [ "$WRF_INSTALL_FLAG" -eq "5" ];then
+    elif [[ $WRF_INSTALL_FLAG -eq 5 ]];then
         mpasInstall
     fi
 }
