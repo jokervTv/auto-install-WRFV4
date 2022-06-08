@@ -476,7 +476,31 @@ getHDF5() {
             ./configure                                 \
                 --prefix=$LIB_INSTALL_DIR/$HDF5_VERSION     \
                 --with-zlib=$LIB_INSTALL_DIR/$ZLIB_VERSION  \
-                --enable-fortran --enable-cxx               \
+                --enable-fortran --enable-cxx \
+                &>$LOG_DIR/$1.conf.log
+            makeInstall $1
+        if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
+            echo '' >> $HOME/.bashrc
+            echo "#for $1" >> $HOME/.bashrc
+            echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$1'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+            echo "export HDF5=$LIB_INSTALL_DIR/$HDF5_VERSION" >> $HOME/.bashrc
+        fi
+    fi
+    export LD_LIBRARY_PATH=$LIB_INSTALL_DIR/$1/lib:$LD_LIBRARY_PATH
+    export HDF5=$LIB_INSTALL_DIR/$HDF5_VERSION
+}
+
+# Install hdf5 with Parallel I/O Support
+getHDF5withParallel() {
+    if [ ! -s "$LIB_INSTALL_DIR/$1/lib/libhdf5.a" ]; then
+        export LDFLAGS=-L$LIB_INSTALL_DIR/$ZLIB_VERSION/lib
+        export CPPFLAGS=-I$LIB_INSTALL_DIR/$ZLIB_VERSION/include
+        wgetSource $1
+        CC=$MPICC_VERSION CXX=$MPICXX_VERSION FC=$MPIFC_VERSION  \
+            ./configure                                 \
+                --prefix=$LIB_INSTALL_DIR/$HDF5_VERSION     \
+                --with-zlib=$LIB_INSTALL_DIR/$ZLIB_VERSION  \
+                --enable-fortran --enable-cxx --enable-parallel \
                 &>$LOG_DIR/$1.conf.log
             makeInstall $1
         if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
@@ -495,7 +519,7 @@ getNetCDF() {
     if [ ! -s "$LIB_INSTALL_DIR/$1/include/netcdf.inc" ]; then
         export CPPFLAGS=-I$LIB_INSTALL_DIR/$HDF5_VERSION/include
         export LDFLAGS=-L$LIB_INSTALL_DIR/$HDF5_VERSION/lib
-        export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}$LIB_INSTALL_DIR/$HDF5_VERSION/lib
+        export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:$LIB_INSTALL_DIR/$HDF5_VERSION/lib
         wgetSource $1
 
         CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
@@ -533,7 +557,7 @@ getNetCDFwithParallel() {
         export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}$LIB_INSTALL_DIR/$HDF5_VERSION/lib
         wgetSource $1
 
-        CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
+        CC=$MPICC_VERSION CXX=$MPICXX_VERSION FC=$MPIFC_VERSION  \
         ./configure --prefix=$LIB_INSTALL_DIR/$NETCDF_VERSION --enable-parallel --disable-dap \
         &>$LOG_DIR/$1.conf.log
 
@@ -544,7 +568,7 @@ getNetCDFwithParallel() {
         export LDFLAGS=-L$LIB_INSTALL_DIR/$1/lib
         wgetSource $2
 
-        CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
+        CC=$MPICC_VERSION CXX=$MPICXX_VERSION FC=$MPIFC_VERSION  \
         ./configure --prefix=$LIB_INSTALL_DIR/$NETCDF_VERSION &>$LOG_DIR/$2.conf.log
 
         makeInstall $2
