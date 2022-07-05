@@ -743,13 +743,14 @@ getWRF() {
             echo -e "\nConfigure WRF: 34. (dmpar) GNU(gfortran/gcc)"
             echo -e '34\n1' | ./configure
             echo " ============================================================== "
+            sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp -lpthread/g' ./configure.wrf
         elif [ "$CC_VERSION" == "icc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure WRF: 15. (dmpar) INTEL (ifort/icc)"
             echo -e '15\n1' | ./configure
             echo " ============================================================== "
+            sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp -lpthread -liomp5/g' ./configure.wrf
         fi
-        sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp -lpthread -liomp5/g' ./configure.wrf
         
         echo -e "\nCompile WRF"
         ./compile $WRF_WPS_OPENMP em_real &> $LOG_DIR/WRF_em_real.log
