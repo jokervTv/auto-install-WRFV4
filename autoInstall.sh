@@ -486,7 +486,7 @@ getHDF5() {
             ./configure                                 \
                 --prefix=$LIB_INSTALL_DIR/$HDF5_VERSION     \
                 --with-zlib=$LIB_INSTALL_DIR/$ZLIB_VERSION  \
-                --enable-fortran --enable-cxx --enable-parallel \
+                --enable-fortran --enable-cxx \
                 &>$LOG_DIR/$1.conf.log
             makeInstall $1
         if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
@@ -510,7 +510,7 @@ getHDF5withParallel() {
             ./configure                                 \
                 --prefix=$LIB_INSTALL_DIR/$HDF5_VERSION     \
                 --with-zlib=$LIB_INSTALL_DIR/$ZLIB_VERSION  \
-                --enable-fortran --enable-cxx --enable-parallel \
+                --enable-fortran --enable-parallel --enable-shared \
                 &>$LOG_DIR/$1.conf.log
             makeInstall $1
         if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
