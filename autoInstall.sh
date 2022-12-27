@@ -70,10 +70,26 @@ READ_CORE_NUMBER=999
 # download src of lib
 wgetSource() {
     cd $SRC_DIR
+
+    if [[ ! -f $1.tar.gz.sha256 ]]; then
+        wget -cnv $DOWNLOAD_URL/$1.tar.gz.sha256
+    fi
+
+    if [[ -f $1.tar.gz ]]; then
+        sha256sum -c $1.tar.gz.sha256 --status
+        status=$?
+        if [[ status -ne 0 ]]; then
+            rm -f $SRC_DIR/$1.tar.gz
+            echo " Download $1"
+            wget -cnv $DOWNLOAD_URL/$1.tar.gz
+        fi
+    else
+        echo " Download $1"
+        wget -cnv $DOWNLOAD_URL/$1.tar.gz
+
+    fi
+
     rm -rf $SRC_DIR/$1
-    rm -f $SRC_DIR/$1.tar.gz*
-    echo " Download $1"
-    wget_flag=$(wget -cnv $DOWNLOAD_URL/$1.tar.gz)
     echo " Extract $1"
     tar -xf $1.tar.gz
     cd $SRC_DIR/$1
@@ -89,8 +105,6 @@ makeInstall() {
     fi
     make install      &>$LOG_DIR/$1.install.log
 }
-
-#-------functions start--------
 
 getInfo() {
     clear
