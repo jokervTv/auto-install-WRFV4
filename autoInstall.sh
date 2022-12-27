@@ -1178,17 +1178,50 @@ wrfFeatureInstall() {
 
 #-------functions end--------
 
-if [ "$1" == "resetEnv" ]; then
+WORKFLOW=""
+
+while getopts "d:f:v:c:n:s:p:" opt;
+do
+    case $opt in
+        d) READ_INSTALL_DIR=$OPTARG;;
+        f) READ_WRF_FEATURE=$OPTARG;;
+        v) READ_WRF_VERSION=$OPTARG
+           READ_WPS_VERSION=$OPTARG;;
+        c) READ_COMPILER_ID=$OPTARG;;
+        n) READ_CORE_NUMBER=$OPTARG;;
+        s) READ_SOFT_SOURCE=$OPTARG;;
+        p) WORKFLOW=$OPTARG;;
+        ?) echo "Unknown parameter: $opt"
+           showHelp
+           exit 1;;
+    esac
+done
+
+if [[ $WORKFLOW == "resetEnv" ]]; then
     reSetEnv
-elif [ "$1" == "server" ]; then
+elif [[ $WORKFLOW == "help" ]]; then
+    showHelp
+elif [[ $WORKFLOW == "server" ]]; then
     SERVER_FLAG="1"
     envConfig
     wrfFeatureInstall
     checkFinishWRF
-else
+elif [[ $WORKFLOW == "dry" ]]; then
     checkSystemInfo
+    getInfo
+    getDir
     chooseFeatures
+    getWRFVersion
+    getWPSVersion
+    getCompiler
+    getOpenmp
+    setSources
+    checkInfo
+    checkMem
+else
     envConfig
     wrfFeatureInstall
     checkFinishWRF
 fi
+
+exit 0
