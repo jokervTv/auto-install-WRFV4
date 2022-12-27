@@ -9,6 +9,8 @@
 # Or (faster in China)
 # bash -c "$(curl -fsSL https://gitee.com/jokervTv/auto-install-WRFV4/raw/master/autoInstall.sh)"
 
+#--------------------------------------
+
 # System info
 OS_RELEASE="ubuntu"
 PACKAGE_MANAGER="apt-get"
@@ -24,10 +26,10 @@ DOWNLOAD_URL="http://wrflib.jokervtv.top"
 CC_VERSION="gcc"
 FC_VERSION="gfortran"
 CXX_VERSION="g++"
-# for ubuntu 2004, there are some bug with openmpi 4.0.3, so change to mpich
-MPICC_VERSION="mpicc.mpich"
-MPIFC_VERSION="mpifort.mpich"
-MPICXX_VERSION="mpic++.mpich"
+# For ubuntu 2004, there are some bug with openmpi 4.0.3, so change to mpich
+MPICC_VERSION="mpicc"
+MPIFC_VERSION="mpifort"
+MPICXX_VERSION="mpic++"
 
 # Version
 OPENMPI_VERSION="openmpi-4.1.1"
@@ -250,19 +252,6 @@ reSetEnv() {
     echo 'export PATH='$LIB_INSTALL_DIR'/'$NETCDF_VERSION'/bin:$PATH' >> $HOME/.bashrc
     echo "export NETCDF=$LIB_INSTALL_DIR/$NETCDF_VERSION" >> $HOME/.bashrc
     echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$NETCDF_VERSION'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
-}
-
-getTest() {
-    echo "============================================================"
-    echo "do you wanna make test or check ? (defualt: no)"
-    echo "0.no"
-    echo "1.yes"
-    read read_test_flag
-    if [ -n "$read_test_flag" ]; then
-        if [[ $read_test_flag -eq 1 ]];then
-            TEST_FLAG="$read_test_flag"
-        fi
-    fi
 }
 
 # Change sources
@@ -1035,6 +1024,9 @@ checkFinishWRF() {
         echo -e "\nEnjoy it\n"
         echo -e "\n Check if the installation is correct \n"
         rm $HOME/.bashrc.autoInstall.bak.temp
+
+        exit 0
+
     elif [ $WRF_INSTALL_SUCCESS_FLAG -eq $WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE ];then
         echo -e "\nAll install ${green}successful${plain}\n"
         ls -d $HOME/$WPS_VERSION --color=auto
@@ -1047,10 +1039,15 @@ checkFinishWRF() {
         rm $SRC_DIR -r
         rm $LOG_DIR -r
         echo -e "\nEnjoy it\n"
+
+        exit 0
+
     else
         echo -e "\nInstall ${red}failed${plain} please check errors\n"
         cp $HOME/.bashrc $HOME/.bashrc.WRF.bak
         cp $HOME/.bashrc.autoInstall.bak $HOME/.bashrc
+
+        exit 1
     fi
 }
 
@@ -1092,7 +1089,6 @@ envInstall() {
     getWPSVersion
     getCompiler
     getOpenmp
-    # getTest
     setSources
     checkInfo
     if [ $SERVER_FLAG -eq 0 ];then
