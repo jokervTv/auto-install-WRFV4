@@ -205,6 +205,8 @@ getWRFVersion() {
     echo "  0. 3.9.1.1"
     echo "  1. 4.2"
     echo "  2. 4.3"
+    echo "  3. 4.4.2"
+
     if [[ $READ_WRF_VERSION -eq 999 ]]; then
         read READ_WRF_VERSION
     fi
@@ -222,6 +224,10 @@ getWRFVersion() {
             WRF_VERSION="WRF-4.3"
             WRFplus_VERSION="WRFplus-4.3"
             WRFDA_VERSION="WRFDA-4.3"
+        elif [[ $READ_WRF_VERSION -eq 3 ]]; then
+            WRF_VERSION="WRF-4.4.2"
+            WRFplus_VERSION="WRFplus-4.4.2"
+            WRFDA_VERSION="WRFDA-4.4.2"
         fi
     fi
 }
@@ -233,6 +239,7 @@ getWPSVersion() {
     echo "  0. 3.9.1"
     echo "  1. 4.2"
     echo "  2. 4.3"
+    echo "  3. 4.4"
     
     if [[ $READ_WPS_VERSION -eq 999 ]]; then
         read READ_WPS_VERSION
@@ -245,6 +252,8 @@ getWPSVersion() {
             WPS_VERSION="WPS-4.2"
         elif [[ $READ_WPS_VERSION -eq 2 ]]; then
             WPS_VERSION="WPS-4.3"
+        elif [[ $READ_WPS_VERSION -eq 3 ]]; then
+            WPS_VERSION="WPS-4.4"
         fi
     fi
 }
@@ -300,15 +309,17 @@ reSetEnv() {
     echo "# START for WRF or MPAS automatic installation" >> $HOME/.bashrc
     echo '' >> $HOME/.bashrc
 
-    echo "#for $ZLIB_VERSION" >> $HOME/.bashrc
-    echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$ZLIB_VERSION'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
-    echo '' >> $HOME/.bashrc
+    if [[ $WPS_VERSION < "WPS-4.4" ]]; then
+        echo "#for $ZLIB_VERSION" >> $HOME/.bashrc
+        echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$ZLIB_VERSION'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+        echo '' >> $HOME/.bashrc
 
-    echo "#for $JASPER_VERSION" >> $HOME/.bashrc
-    echo "export JASPER=$LIB_INSTALL_DIR/$JASPER_VERSION" >> $HOME/.bashrc
-    echo "export JASPERLIB=$TEMP_JASPER_LIB_DIR" >> $HOME/.bashrc
-    echo "export JASPERINC=$LIB_INSTALL_DIR/$JASPER_VERSION/include" >> $HOME/.bashrc
-    echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$JASPER_VERSION'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+        echo "#for $JASPER_VERSION" >> $HOME/.bashrc
+        echo "export JASPER=$LIB_INSTALL_DIR/$JASPER_VERSION" >> $HOME/.bashrc
+        echo "export JASPERLIB=$TEMP_JASPER_LIB_DIR" >> $HOME/.bashrc
+        echo "export JASPERINC=$LIB_INSTALL_DIR/$JASPER_VERSION/include" >> $HOME/.bashrc
+        echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$JASPER_VERSION'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+    fi
 
     echo '' >> $HOME/.bashrc
     echo "#for $HDF5_VERSION" >> $HOME/.bashrc
@@ -437,10 +448,16 @@ getLibrary() {
     echo -e "\nInstall essential components"
     echo "=========================================================="
     if [ "$OS_RELEASE" = "ubuntu" ]; then
-        sudo $PACKAGE_MANAGER -yqq install glibc* libgrib2c0d libgrib2c-dev libjpeg8* libpng16* perl curl
-        sudo $PACKAGE_MANAGER -yqq install libpng-tools
-        sudo $PACKAGE_MANAGER -yqq install libpng-devel
-        sudo $PACKAGE_MANAGER -yqq install libpng-dev
+
+        sudo $PACKAGE_MANAGER -yqq install libjpeg8* perl curl glibc*
+
+        if [[ $WPS_VERSION < "WPS-4.4" ]]; then
+            sudo $PACKAGE_MANAGER -yqq install libgrib2c0d libgrib2c-dev libpng16*
+            sudo $PACKAGE_MANAGER -yqq install libpng-tools
+            sudo $PACKAGE_MANAGER -yqq install libpng-devel
+            sudo $PACKAGE_MANAGER -yqq install libpng-dev
+        fi
+        
         sudo $PACKAGE_MANAGER -yqq install tcsh samba cpp m4 quota
         sudo $PACKAGE_MANAGER -yqq install cmake make wget tar
         sudo $PACKAGE_MANAGER -yqq install autoconf libtool automake
@@ -448,9 +465,15 @@ getLibrary() {
         sudo $PACKAGE_MANAGER -yqq install gcc g++ gfortran
         sudo $PACKAGE_MANAGER -yqq install libcurl4-openssl-dev libcurl4
         sudo $PACKAGE_MANAGER -yqq install git
+
     elif [ "$OS_RELEASE" = "centos" ]; then
+
         sudo $PACKAGE_MANAGER -yqq install libjpeg-turbo libjpeg-turbo-devel
-        sudo $PACKAGE_MANAGER -yqq install libpng-devel libpng16*
+
+        if [[ $WPS_VERSION < "WPS-4.4" ]]; then
+            sudo $PACKAGE_MANAGER -yqq install libpng-devel libpng16*
+        fi
+
         sudo $PACKAGE_MANAGER -yqq install tcsh samba cpp m4 quota
         sudo $PACKAGE_MANAGER -yqq install gcc gcc-c++ gcc-gfortran
         sudo $PACKAGE_MANAGER -yqq install cmake make wget tar
@@ -493,50 +516,54 @@ getOpenMPI() {
 
 # Install zlib
 getZilb() {
-    if [ ! -s "$LIB_INSTALL_DIR/$1/lib/libz.a" ]; then
-        wgetSource $1
-        CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
-        ./configure --prefix=$LIB_INSTALL_DIR/$1 &>$LOG_DIR/$1.conf.log
-        makeInstall $1
-        if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
-            echo '' >> $HOME/.bashrc
-            echo "#for $1" >> $HOME/.bashrc
-            echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$1'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+    if [[ $WPS_VERSION < "WPS-4.4" ]]; then
+        if [ ! -s "$LIB_INSTALL_DIR/$1/lib/libz.a" ]; then
+            wgetSource $1
+            CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
+            ./configure --prefix=$LIB_INSTALL_DIR/$1 &>$LOG_DIR/$1.conf.log
+            makeInstall $1
+            if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
+                echo '' >> $HOME/.bashrc
+                echo "#for $1" >> $HOME/.bashrc
+                echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$1'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+            fi
         fi
+        export LD_LIBRARY_PATH=$LIB_INSTALL_DIR/$1/lib:$LD_LIBRARY_PATH
     fi
-    export LD_LIBRARY_PATH=$LIB_INSTALL_DIR/$1/lib:$LD_LIBRARY_PATH
 }
 
 # Install jasper
 getJasper() {
-    if [ "$OS_RELEASE" = "ubuntu" ]; then
-        TEMP_JASPER_LIB_DIR="$LIB_INSTALL_DIR/$1/lib"
-    elif [ "$OS_RELEASE" = "centos" ]; then
-        TEMP_JASPER_LIB_DIR="$LIB_INSTALL_DIR/$1/lib64"
-    fi
-    if [ ! -s "$TEMP_JASPER_LIB_DIR/libjasper.so" ]; then
-        wgetSource $1
-        CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION \
-        cmake -G "Unix Makefiles" \
-            -DALLOW_IN_SOURCE_BUILD=TRUE \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DJAS_ENABLE_DOC=false \
-            -DCMAKE_INSTALL_PREFIX=$LIB_INSTALL_DIR/$1 \
-            &>$LOG_DIR/$1.conf.log
-        makeInstall $1
-        if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
-            echo '' >> $HOME/.bashrc
-            echo "#for $1" >> $HOME/.bashrc
-            echo "export JASPER=$LIB_INSTALL_DIR/$1" >> $HOME/.bashrc
-            echo "export JASPERLIB=$TEMP_JASPER_LIB_DIR" >> $HOME/.bashrc
-            echo "export JASPERINC=$LIB_INSTALL_DIR/$1/include" >> $HOME/.bashrc
-            echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$1'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+    if [[ $WPS_VERSION < "WPS-4.4" ]]; then
+        if [ "$OS_RELEASE" = "ubuntu" ]; then
+            TEMP_JASPER_LIB_DIR="$LIB_INSTALL_DIR/$1/lib"
+        elif [ "$OS_RELEASE" = "centos" ]; then
+            TEMP_JASPER_LIB_DIR="$LIB_INSTALL_DIR/$1/lib64"
         fi
+        if [ ! -s "$TEMP_JASPER_LIB_DIR/libjasper.so" ]; then
+            wgetSource $1
+            CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION \
+            cmake -G "Unix Makefiles" \
+                -DALLOW_IN_SOURCE_BUILD=TRUE \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DJAS_ENABLE_DOC=false \
+                -DCMAKE_INSTALL_PREFIX=$LIB_INSTALL_DIR/$1 \
+                &>$LOG_DIR/$1.conf.log
+            makeInstall $1
+            if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
+                echo '' >> $HOME/.bashrc
+                echo "#for $1" >> $HOME/.bashrc
+                echo "export JASPER=$LIB_INSTALL_DIR/$1" >> $HOME/.bashrc
+                echo "export JASPERLIB=$TEMP_JASPER_LIB_DIR" >> $HOME/.bashrc
+                echo "export JASPERINC=$LIB_INSTALL_DIR/$1/include" >> $HOME/.bashrc
+                echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$1'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+            fi
+        fi
+        export JASPER=$LIB_INSTALL_DIR/$1
+        export JASPERLIB=$TEMP_JASPER_LIB_DIR
+        export JASPERINC=$LIB_INSTALL_DIR/$1/include
+        export LD_LIBRARY_PATH=$TEMP_JASPER_LIB_DIR:$LD_LIBRARY_PATH
     fi
-    export JASPER=$LIB_INSTALL_DIR/$1
-    export JASPERLIB=$TEMP_JASPER_LIB_DIR
-    export JASPERINC=$LIB_INSTALL_DIR/$1/include
-    export LD_LIBRARY_PATH=$TEMP_JASPER_LIB_DIR:$LD_LIBRARY_PATH
 }
 
 # Install hdf5
@@ -1066,7 +1093,13 @@ getWPS() {
         fi
 
         echo -e "\nCompile WPS"
-        ./compile &> $LOG_DIR/$1.compile.log
+        
+        if [[ $WPS_VERSION < "WPS-4.4" ]]; then
+            ./compile &> $LOG_DIR/$1.compile.log
+        else
+            ./compile --build-grib2-libs &> $LOG_DIR/$1.compile.log
+        fi
+
         flag=0
         for file in $(ls $HOME/$WPS_VERSION/util/*.exe)
         do
