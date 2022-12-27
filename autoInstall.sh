@@ -54,6 +54,19 @@ WRF_INSTALL_SUCCESS_FLAG=0
 WRF_CHEM_SETTING=0
 WRF_KPP_SETTING=0
 
+# Read parameter
+READ_INSTALL_DIR=""
+READ_WRF_VERSION=999
+READ_WPS_VERSION=999
+READ_COMPILER_ID=999
+READ_WRF_FEATURE=999
+READ_SOFT_SOURCE=999
+READ_CORE_NUMBER=999
+
+#--------------------------------------
+#-------functions start--------
+#--------------------------------------
+
 # download src of lib
 wgetSource() {
     cd $SRC_DIR
@@ -137,10 +150,19 @@ getDir() {
     echo ""
     echo "(defualt: $LIB_INSTALL_DIR)"
     echo ""
-    read read_install_dir
-    if [ -n "$read_install_dir" ]; then
-        LIB_INSTALL_DIR="$read_install_dir"
+
+    if [[ -z $READ_INSTALL_DIR ]]; then
+        read READ_INSTALL_DIR
     fi
+
+    if [[ -n $READ_INSTALL_DIR ]]; then
+        LIB_INSTALL_DIR=$READ_INSTALL_DIR
+    fi
+
+    if [[ -z $LIB_INSTALL_DIR ]]; then
+        echo -e "\n\n${red}Error${plain}: install path: $LIB_INSTALL_DIR is NULL, please check it!"
+    fi
+
     mkdir $LIB_INSTALL_DIR
 }
 
@@ -169,13 +191,20 @@ getWRFVersion() {
     echo "  0. 3.9.1.1"
     echo "  1. 4.2"
     echo "  2. 4.3"
-    read compier_index
-    if [ -n "$compier_index" ]; then
-        if [[ $compier_index -eq 0 ]]; then
+    if [[ $READ_WRF_VERSION -eq 999 ]]; then
+        read READ_WRF_VERSION
+    fi
+
+    if [[ -n $READ_WRF_VERSION ]]; then
+        if [[ $READ_WRF_VERSION -eq 0 ]]; then
             WRF_VERSION="WRF-3.9.1.1"
             WRFplus_VERSION="WRFplus-3.9.1.1"
             WRFDA_VERSION="WRFDA-3.9.1.1"
-        elif [[ $compier_index -eq 2 ]]; then
+        elif [[ $READ_WRF_VERSION -eq 1 ]]; then
+            WRF_VERSION="WRF-4.2"
+            WRFplus_VERSION="WRFplus-4.2"
+            WRFDA_VERSION="WRFDA-4.2"
+        elif [[ $READ_WRF_VERSION -eq 2 ]]; then
             WRF_VERSION="WRF-4.3"
             WRFplus_VERSION="WRFplus-4.3"
             WRFDA_VERSION="WRFDA-4.3"
@@ -190,11 +219,17 @@ getWPSVersion() {
     echo "  0. 3.9.1"
     echo "  1. 4.2"
     echo "  2. 4.3"
-    read compier_index
-    if [ -n "$compier_index" ]; then
-        if [[ $compier_index -eq 0 ]]; then
+    
+    if [[ $READ_WPS_VERSION -eq 999 ]]; then
+        read READ_WPS_VERSION
+    fi
+
+    if [[ -n $READ_WPS_VERSION ]]; then
+        if [[ $READ_WPS_VERSION -eq 0 ]]; then
             WPS_VERSION="WPS-3.9.1"
-        elif [[ $compier_index -eq 2 ]]; then
+        elif [[ $READ_WPS_VERSION -eq 1 ]]; then
+            WPS_VERSION="WPS-4.2"
+        elif [[ $READ_WPS_VERSION -eq 2 ]]; then
             WPS_VERSION="WPS-4.3"
         fi
     fi
@@ -206,9 +241,13 @@ getCompiler() {
     echo ""
     echo "  1. GUN (gcc/gfortran)"
     echo "  2. Intel oneAPI"
-    read compier_index
-    if [ -n "$compier_index" ]; then
-        if [[ $compier_index -eq 2 ]]; then
+
+    if [[ $READ_COMPILER_ID -eq 999 ]]; then
+        read READ_COMPILER_ID
+    fi
+
+    if [[ -n $READ_COMPILER_ID ]]; then
+        if [[ $READ_COMPILER_ID -eq 2 ]]; then
             CC_VERSION="icc"
             FC_VERSION="ifort"
             CXX_VERSION="icpc"
@@ -228,9 +267,13 @@ getOpenmp() {
     echo "How many physical cores do you wan to use ? (defualt: 4)"
     echo "If you know nothing about this, please input 0 or just hit enter."
     echo ""
-    read cores_number
-    if [ -n "$cores_number" ]; then
-        if [ $cores_number -ne 0 ]; then
+
+    if [[ $READ_CORE_NUMBER -eq 999 ]]; then
+        read READ_CORE_NUMBER
+    fi
+
+    if [[ -n $READ_CORE_NUMBER ]]; then
+        if [ $READ_CORE_NUMBER -ne 0 ]; then
             MAKE_OPENMP="-j$cores_number"
             WRF_WPS_OPENMP="-j $cores_number"
         fi
@@ -273,10 +316,13 @@ setSources() {
     echo "  0. no, nothing to change (default)"
     echo ""
     echo "If you know nothing about this, please input 0"
-    willness="0"
-    read willness
-    if  [ -n "$willness" ] ;then
-        if [[ $willness -eq 1 ]];then
+
+    if [[ $READ_SOFT_SOURCE -eq 999 ]]; then
+        read READ_SOFT_SOURCE
+    fi
+
+    if  [[ -n $READ_SOFT_SOURCE ]] ;then
+        if [[ $READ_SOFT_SOURCE -eq 1 ]];then
             sudo -s bash -c "/bin/bash <(curl -sSL https://gitee.com/SuperManito/LinuxMirrors/raw/main/ChangeMirrors.sh)"
         fi
     fi
@@ -299,23 +345,27 @@ chooseFeatures() {
     echo "  5. MPAS-A 7.0 (Experimental)"
     echo "  0. Building Libraries Only"
     echo "=============================================="
-    read read_test_flag
-    if [ $read_test_flag -eq 0 ];then
+
+    if [[ $READ_WRF_FEATURE -eq 999 ]]; then
+        read READ_WRF_FEATURE
+    fi
+    
+    if [[ $READ_WRF_FEATURE -eq 0 ]];then
         WRF_INSTALL_FLAG=0
         WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=0
-    elif [ $read_test_flag -eq 1 ];then
+    elif [[ $READ_WRF_FEATURE -eq 1 ]];then
         WRF_INSTALL_FLAG=1
         WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=2
-    elif [ $read_test_flag -eq 2 ];then
+    elif [[ $READ_WRF_FEATURE -eq 2 ]];then
         WRF_INSTALL_FLAG=2
         WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=2
-    elif [ $read_test_flag -eq 3 ];then
+    elif [[ $READ_WRF_FEATURE -eq 3 ]];then
         WRF_INSTALL_FLAG=3
         WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=2
-    elif [ $read_test_flag -eq 4 ];then
+    elif [[ $READ_WRF_FEATURE -eq 4 ]];then
         WRF_INSTALL_FLAG=4
         WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=4
-    elif [ $read_test_flag -eq 5 ];then
+    elif [[ $READ_WRF_FEATURE -eq 5 ]];then
         WRF_INSTALL_FLAG=5
         #WRF_INSTALL_SUCCESS_FLAG_SHOULD_BE=4
     else
