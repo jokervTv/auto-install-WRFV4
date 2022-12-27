@@ -48,7 +48,7 @@ PIO_VERSION="pio-1.7.4" #https://github.com/NCAR/ParallelIO/
 PNETCDF_VERSION="pnetcdf-1.11.2" #https://github.com/Parallel-NetCDF/PnetCDF
 MPAS_VERSION="MPAS-Model-7.0" #https://github.com/MPAS-Dev/MPAS-Model
 
-# check flag
+# Check flag
 WRF_INSTALL_FLAG=1
 WRF_INSTALL_SUCCESS_FLAG=0
 WRF_CHEM_SETTING=0
@@ -88,6 +88,16 @@ getInfo() {
     echo " \              Script Created by Yongpeng Zhang              / "
     echo " ============================================================== "
     echo ""
+}
+
+showHelp() {
+    echo "Description:  install WPS,WRF,WRFDA,WRF-Chem."
+    echo ""
+    echo "Usage:"
+    echo "test.sh [-j S_DIR] [-m D_DIR]"
+    echo "Description:"
+    echo "S_DIR,the path of source."
+    echo "D_DIR,the path of destination."
 }
 
 # Check authority
@@ -1081,21 +1091,26 @@ getRegRM4() {
 
 # ---------------------------------------
 
-envInstall() {
+envConfig() {
+    checkSystemInfo
     getInfo
     # checkRoot
     getDir
+    chooseFeatures
     getWRFVersion
     getWPSVersion
     getCompiler
     getOpenmp
     setSources
     checkInfo
+    checkMem
     if [ $SERVER_FLAG -eq 0 ];then
-        checkMem
         getLibrary
     fi
     creatLogs
+}
+
+envInstall() {
     getOpenMPI  $OPENMPI_VERSION
     getZilb     $ZLIB_VERSION
     getJasper   $JASPER_VERSION
@@ -1104,13 +1119,11 @@ envInstall() {
 }
 
 wrfInstall() {
-    envInstall
     getWRF      $WRF_VERSION
     getWPS      $WPS_VERSION
 }
 
 wrfChemInstall() {
-    envInstall
     getBison    $BISON_VERSION
     getFlex     $FLEX_VERSION
     if [ "$OS_RELEASE" == "centos" ];then
@@ -1125,7 +1138,6 @@ wrfChemInstall() {
 }
 
 wrfHydroInstall() {
-    envInstall
     getWRFHydro $WRF_VERSION
     getWPS      $WPS_VERSION
 }
@@ -1137,7 +1149,6 @@ wrfdaInstall() {
 }
 
 mpasInstall() {
-    envInstall
     getPnetCDF  $PNETCDF_VERSION
     getPIO      $PIO_VERSION
     getMPAS     $MPAS_VERSION
@@ -1147,14 +1158,19 @@ wrfFeatureInstall() {
     if   [[ $WRF_INSTALL_FLAG -eq 0 ]];then
         envInstall
     elif [[ $WRF_INSTALL_FLAG -eq 1 ]];then
+        envInstall
         wrfInstall
     elif [[ $WRF_INSTALL_FLAG -eq 2 ]];then
+        envInstall
         wrfChemInstall
     elif [[ $WRF_INSTALL_FLAG -eq 3 ]];then
+        envInstall
         wrfHydroInstall
     elif [[ $WRF_INSTALL_FLAG -eq 4 ]];then
+        envInstall
         wrfdaInstall
     elif [[ $WRF_INSTALL_FLAG -eq 5 ]];then
+        envInstall
         mpasInstall
     fi
 }
@@ -1166,13 +1182,13 @@ if [ "$1" == "resetEnv" ]; then
     reSetEnv
 elif [ "$1" == "server" ]; then
     SERVER_FLAG="1"
-    checkSystemInfo
-    chooseFeatures
+    envConfig
     wrfFeatureInstall
     checkFinishWRF
 else
     checkSystemInfo
     chooseFeatures
+    envConfig
     wrfFeatureInstall
     checkFinishWRF
 fi
