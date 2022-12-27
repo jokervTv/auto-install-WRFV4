@@ -499,19 +499,32 @@ creatLogs() {
 
 # Install openMPI
 getOpenMPI() {
-    if [ ! -s "$LIB_INSTALL_DIR/$1/lib/libmpi.so" ]; then
-        wgetSource $1
-        CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
-        ./configure --prefix=$LIB_INSTALL_DIR/$1 &>$LOG_DIR/$1.conf.log
-        makeInstall $1
-        if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
-            echo '' >> $HOME/.bashrc
-            echo "#for $1" >> $HOME/.bashrc
-            echo 'export PATH='$LIB_INSTALL_DIR'/'$1'/bin:$PATH' >> $HOME/.bashrc
-            echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$1'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+    mpi_fc=`which mpifc || which mpiifort`
+    mpi_cc=`which mpicc || which mpiicc`
+    mpi_cc_flag=$?
+    if [ $mpi_cc_flag -eq 1 ];then
+        if [ ! -s "$LIB_INSTALL_DIR/$1/lib/libmpi.so" ]; then
+            wgetSource $1
+            CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
+            ./configure --prefix=$LIB_INSTALL_DIR/$1 &>$LOG_DIR/$1.conf.log
+            makeInstall $1
+            if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
+                echo '' >> $HOME/.bashrc
+                echo "#for $1" >> $HOME/.bashrc
+                echo 'export PATH='$LIB_INSTALL_DIR'/'$1'/bin:$PATH' >> $HOME/.bashrc
+                echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$1'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+            fi
         fi
+        export PATH=$LIB_INSTALL_DIR/$1/bin:$PATH
+        export LD_LIBRARY_PATH=$LIB_INSTALL_DIR/$1/lib:$LD_LIBRARY_PATH
+    else
+        echo "=============================================="
+        echo ""
+        echo "Use MPI CC: $mpi_cc"
+        echo "Use MPI FC: $mpi_fc"
+        echo ""
+        echo "=============================================="
     fi
-    export LD_LIBRARY_PATH=$LIB_INSTALL_DIR/$1/lib:$LD_LIBRARY_PATH
 }
 
 # Install zlib
