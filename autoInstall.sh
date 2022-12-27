@@ -356,7 +356,7 @@ setSources() {
 
 chooseFeatures() {
     echo "=============================================="
-    echo "Which option do you wanna choose ?"
+    echo "Which option do you wanna choose ? (defualt: 0)"
     echo ""
     echo "  1. WPS, WRF:em_real"
     if [ "$OS_RELEASE" == "centos" ];then
