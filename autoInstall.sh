@@ -309,11 +309,11 @@ reSetEnv() {
     echo "# START for WRF or MPAS automatic installation" >> $HOME/.bashrc
     echo '' >> $HOME/.bashrc
 
-    if [[ $WPS_VERSION < "WPS-4.4" ]]; then
-        echo "#for $ZLIB_VERSION" >> $HOME/.bashrc
-        echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$ZLIB_VERSION'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
-        echo '' >> $HOME/.bashrc
+    echo "#for $ZLIB_VERSION" >> $HOME/.bashrc
+    echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$ZLIB_VERSION'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+    echo '' >> $HOME/.bashrc
 
+    if [[ $WPS_VERSION < "WPS-4.4" ]]; then
         echo "#for $JASPER_VERSION" >> $HOME/.bashrc
         echo "export JASPER=$LIB_INSTALL_DIR/$JASPER_VERSION" >> $HOME/.bashrc
         echo "export JASPERLIB=$TEMP_JASPER_LIB_DIR" >> $HOME/.bashrc
@@ -450,14 +450,11 @@ getLibrary() {
     if [ "$OS_RELEASE" = "ubuntu" ]; then
 
         sudo $PACKAGE_MANAGER -yqq install libjpeg8* perl curl glibc*
-
-        if [[ $WPS_VERSION < "WPS-4.4" ]]; then
-            sudo $PACKAGE_MANAGER -yqq install libgrib2c0d libgrib2c-dev libpng16*
-            sudo $PACKAGE_MANAGER -yqq install libpng-tools
-            sudo $PACKAGE_MANAGER -yqq install libpng-devel
-            sudo $PACKAGE_MANAGER -yqq install libpng-dev
-        fi
-        
+        sudo $PACKAGE_MANAGER -yqq install libgrib2c0d libgrib2c-dev libpng16*
+        sudo $PACKAGE_MANAGER -yqq install libpng-tools
+        sudo $PACKAGE_MANAGER -yqq install zlib1g zlib1g-dev
+        sudo $PACKAGE_MANAGER -yqq install libpng-devel
+        sudo $PACKAGE_MANAGER -yqq install libpng-dev
         sudo $PACKAGE_MANAGER -yqq install tcsh samba cpp m4 quota
         sudo $PACKAGE_MANAGER -yqq install cmake make wget tar
         sudo $PACKAGE_MANAGER -yqq install autoconf libtool automake
@@ -469,11 +466,7 @@ getLibrary() {
     elif [ "$OS_RELEASE" = "centos" ]; then
 
         sudo $PACKAGE_MANAGER -yqq install libjpeg-turbo libjpeg-turbo-devel
-
-        if [[ $WPS_VERSION < "WPS-4.4" ]]; then
-            sudo $PACKAGE_MANAGER -yqq install libpng-devel libpng16*
-        fi
-
+        sudo $PACKAGE_MANAGER -yqq install libpng-devel libpng16*
         sudo $PACKAGE_MANAGER -yqq install tcsh samba cpp m4 quota
         sudo $PACKAGE_MANAGER -yqq install gcc gcc-c++ gcc-gfortran
         sudo $PACKAGE_MANAGER -yqq install cmake make wget tar
@@ -529,20 +522,18 @@ getOpenMPI() {
 
 # Install zlib
 getZilb() {
-    if [[ $WPS_VERSION < "WPS-4.4" ]]; then
-        if [ ! -s "$LIB_INSTALL_DIR/$1/lib/libz.a" ]; then
-            wgetSource $1
-            CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
-            ./configure --prefix=$LIB_INSTALL_DIR/$1 &>$LOG_DIR/$1.conf.log
-            makeInstall $1
-            if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
-                echo '' >> $HOME/.bashrc
-                echo "#for $1" >> $HOME/.bashrc
-                echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$1'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
-            fi
+    if [ ! -s "$LIB_INSTALL_DIR/$1/lib/libz.a" ]; then
+        wgetSource $1
+        CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
+        ./configure --prefix=$LIB_INSTALL_DIR/$1 &>$LOG_DIR/$1.conf.log
+        makeInstall $1
+        if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
+            echo '' >> $HOME/.bashrc
+            echo "#for $1" >> $HOME/.bashrc
+            echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$1'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
         fi
-        export LD_LIBRARY_PATH=$LIB_INSTALL_DIR/$1/lib:$LD_LIBRARY_PATH
     fi
+    export LD_LIBRARY_PATH=$LIB_INSTALL_DIR/$1/lib:$LD_LIBRARY_PATH
 }
 
 # Install jasper
@@ -1087,31 +1078,32 @@ getWPS() {
         echo -e "\nClean\n"
         ./clean -a &>/dev/null
 
-        sed -i 's/standard_wrf_dirs="WRF WRF-4.0.3 WRF-4.0.2 WRF-4.0.1 WRF-4.0 WRFV3 WRF-4.1.2"/standard_wrf_dirs="WRF WRF-4.2 WRF-4.3 WRF-4.0.3 WRF-4.0.2 WRF-4.0.1 WRF-4.0 WRFV3 WRF-4.1.2"/g' ./configure
+        sed -i 's/standard_wrf_dirs="WRF WRF-4.0.3 WRF-4.0.2 WRF-4.0.1 WRF-4.0 WRFV3 WRF-4.1.2"/standard_wrf_dirs="WRF WRF-4.2 WRF-4.3 WRFV4.4.2 WRF-4.0.3 WRF-4.0.2 WRF-4.0.1 WRF-4.0 WRFV3 WRF-4.1.2"/g' ./configure
 
         if [ "$CC_VERSION" == "gcc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure WPS: 1. Linux x86_64,gfortran (serial)"
-            echo '1' | ./configure &>$LOG_DIR/$1.config.log
-            echo " ============================================================== "
+
+            if [[ $WPS_VERSION < "WPS-4.4" ]]; then
+                echo '1' | ./configure &>$LOG_DIR/$1.config.log
+            else
+                echo '1' | ./configure --build-grib2-libs &>$LOG_DIR/$1.config.log
+            fi
+
             sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wps
+            echo " ============================================================== "
         elif [ "$CC_VERSION" == "icc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure WPS: 19. Linux x86_64, Intel compiler (dmpar)"
             echo '19' | ./configure &>$LOG_DIR/$1.config.log
-            echo " ============================================================== "
             sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp -lpthread -liomp5/g' ./configure.wps
             sed -i 's/DM_FC               = mpifort/DM_FC               = mpiifort/g' ./configure.wps
             sed -i 's/DM_CC               = mpicc/DM_CC               = mpiicc/g' ./configure.wps
+            echo " ============================================================== "
         fi
 
         echo -e "\nCompile WPS"
-        
-        if [[ $WPS_VERSION < "WPS-4.4" ]]; then
-            ./compile &> $LOG_DIR/$1.compile.log
-        else
-            ./compile --build-grib2-libs &> $LOG_DIR/$1.compile.log
-        fi
+        ./compile &> $LOG_DIR/$1.compile.log
 
         flag=0
         for file in $(ls $HOME/$WPS_VERSION/util/*.exe)
