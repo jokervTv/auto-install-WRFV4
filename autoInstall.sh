@@ -1078,7 +1078,7 @@ getWPS() {
         echo -e "\nClean\n"
         ./clean -a &>/dev/null
 
-        sed -i 's/standard_wrf_dirs="WRF WRF-4.0.3 WRF-4.0.2 WRF-4.0.1 WRF-4.0 WRFV3 WRF-4.1.2"/standard_wrf_dirs="WRF WRF-4.2 WRF-4.3 WRFV4.4.2 WRF-4.0.3 WRF-4.0.2 WRF-4.0.1 WRF-4.0 WRFV3 WRF-4.1.2"/g' ./configure
+        sed -i 's/standard_wrf_dirs="WRF WRF-4.0.3 WRF-4.0.2 WRF-4.0.1 WRF-4.0 WRFV3 WRF-4.1.2"/standard_wrf_dirs="WRF WRF-4.2 WRF-4.3 WRF-4.4.2 WRFV3"/g' ./configure
 
         if [ "$CC_VERSION" == "gcc" ];then
             echo " ============================================================== "
