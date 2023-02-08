@@ -461,6 +461,7 @@ getLibrary() {
         sudo $PACKAGE_MANAGER -yqq install autopoint gettext
         sudo $PACKAGE_MANAGER -yqq install gcc g++ gfortran
         sudo $PACKAGE_MANAGER -yqq install libcurl4-openssl-dev libcurl4
+        sudo $PACKAGE_MANAGER -yqq install libxml2-dev libxml2
         sudo $PACKAGE_MANAGER -yqq install git
 
     elif [ "$OS_RELEASE" = "centos" ]; then
@@ -474,6 +475,7 @@ getLibrary() {
         sudo $PACKAGE_MANAGER -yqq install gettext-devel gettext
         sudo $PACKAGE_MANAGER -yqq install libcurl-devel libcurl curl
         sudo $PACKAGE_MANAGER -yqq install git perl
+        sudo $PACKAGE_MANAGER -yqq install libxml2-devel libxml2
         sudo $PACKAGE_MANAGER -yqq install freeglut-devel freeglut
     fi
 }
