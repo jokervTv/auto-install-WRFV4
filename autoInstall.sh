@@ -638,8 +638,15 @@ getNetCDF() {
         export LDFLAGS=-L$LIB_INSTALL_DIR/$1/lib
         wgetSource $2
 
-        CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
-        ./configure --prefix=$LIB_INSTALL_DIR/$NETCDF_VERSION &>$LOG_DIR/$2.conf.log
+        if [ NETCDF_FORTRAN_VERSION == "netcdf-fortran-4.4.5" ]; then
+            CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
+            FCFLAGS="-w -fallow-argument-mismatch -O2" \
+            FFLAGS="-w -fallow-argument-mismatch -O2" \
+            ./configure --prefix=$LIB_INSTALL_DIR/$NETCDF_VERSION &>$LOG_DIR/$2.conf.log
+        else
+            CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
+            ./configure --prefix=$LIB_INSTALL_DIR/$NETCDF_VERSION &>$LOG_DIR/$2.conf.log
+        fi
 
         makeInstall $2
         if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
@@ -788,7 +795,7 @@ getPIO() {
 
         make            &>$LOG_DIR/$1.make.log
         make install    &>$LOG_DIR/$1.install.log
-            
+
         if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
             echo '' >> $HOME/.bashrc
             echo "#for $1" >> $HOME/.bashrc
@@ -848,7 +855,7 @@ getWRF() {
             echo " ============================================================== "
             sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp -lpthread -liomp5/g' ./configure.wrf
         fi
-        
+
         echo -e "\nCompile WRF"
         ./compile $WRF_WPS_OPENMP em_real &> $LOG_DIR/WRF_em_real.log
         flag=0
