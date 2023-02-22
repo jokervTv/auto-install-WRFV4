@@ -744,6 +744,7 @@ getWRF() {
             echo -e '34\n1' | ./configure
             echo " ============================================================== "
             sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp -lpthread/g' ./configure.wrf
+            sed -i '32s/-ffree-form -O -fno-second-underscore -fconvert=big-endian -frecord-marker=4/-ffree-form -O -fno-second-underscore -fconvert=big-endian -frecord-marker=4 -std=legacy/g' ./configure.wrf
         elif [ "$CC_VERSION" == "icc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure WRF: 15. (dmpar) INTEL (ifort/icc)"
