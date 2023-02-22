@@ -1205,11 +1205,11 @@ envConfig() {
     getWPSVersion
     getCompiler
     getOpenmp
-    setSources
     checkInfo
-    checkMem
-    if [ $SERVER_FLAG -eq 0 ];then
+    if [[ $SERVER_FLAG -eq 0 ]];then
+        checkMem
         getLibrary
+        setSources
     fi
     creatLogs
 }
@@ -1259,22 +1259,20 @@ mpasInstall() {
 }
 
 wrfFeatureInstall() {
+    if [[ $SERVER_FLAG -eq 0 ]]; then
+        envInstall
+    fi
     if   [[ $WRF_INSTALL_FLAG -eq 0 ]];then
         envInstall
     elif [[ $WRF_INSTALL_FLAG -eq 1 ]];then
-        envInstall
         wrfInstall
     elif [[ $WRF_INSTALL_FLAG -eq 2 ]];then
-        envInstall
         wrfChemInstall
     elif [[ $WRF_INSTALL_FLAG -eq 3 ]];then
-        envInstall
         wrfHydroInstall
     elif [[ $WRF_INSTALL_FLAG -eq 4 ]];then
-        envInstall
         wrfdaInstall
     elif [[ $WRF_INSTALL_FLAG -eq 5 ]];then
-        envInstall
         mpasInstall
     fi
 }
