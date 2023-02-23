@@ -38,8 +38,8 @@ NETCDF_VERSION="NETCDF-4.7.0"
 NETCDF_FORTRAN_VERSION="netcdf-fortran-4.4.5"
 BISON_VERSION="bison-3.5.4" #http://ftpmirror.gnu.org/bison/
 FLEX_VERSION="flex-2.6.4" #https://github.com/westes/flex
-WPS_VERSION="WPS-4.2" #https://github.com/wrf-model/WPS
-WRF_VERSION="WRF-4.2" #https://github.com/wrf-model/WRF
+WPS_VERSION="WPS-4.3" #https://github.com/wrf-model/WPS
+WRF_VERSION="WRF-4.3" #https://github.com/wrf-model/WRF
 WRFplus_VERSION="WRFplus-4.2" #https://github.com/wrf-model/WRF
 WRFDA_VERSION="WRFDA-4.2" #https://github.com/wrf-model/WRF
 PIO_VERSION="pio-1.7.4" #https://github.com/NCAR/ParallelIO/
@@ -152,7 +152,7 @@ checkMem() {
 
 getWRFVersion() {
     echo "============================================================"
-    echo "Which version of ${red}WRF${plain} do you want to use ? (defualt: 1)"
+    echo "Which version of ${red}WRF${plain} do you want to use ? (defualt: 2)"
     echo ""
     echo "  0. 3.9.1.1"
     echo "  1. 4.2"
@@ -163,6 +163,10 @@ getWRFVersion() {
             WRF_VERSION="WRF-3.9.1.1"
             WRFplus_VERSION="WRFplus-3.9.1.1"
             WRFDA_VERSION="WRFDA-3.9.1.1"
+        elif [[ $compier_index -eq 1 ]]; then
+            WRF_VERSION="WRF-4.2"
+            WRFplus_VERSION="WRFplus-4.2"
+            WRFDA_VERSION="WRFDA-4.2"
         elif [[ $compier_index -eq 2 ]]; then
             WRF_VERSION="WRF-4.3"
             WRFplus_VERSION="WRFplus-4.3"
@@ -173,7 +177,7 @@ getWRFVersion() {
 
 getWPSVersion() {
     echo "============================================================"
-    echo "Which version of ${red}WPS${plain} do you want to use ? (defualt: 1)"
+    echo "Which version of ${red}WPS${plain} do you want to use ? (defualt: 2)"
     echo ""
     echo "  0. 3.9.1"
     echo "  1. 4.2"
@@ -182,6 +186,8 @@ getWPSVersion() {
     if [ -n "$compier_index" ]; then
         if [[ $compier_index -eq 0 ]]; then
             WPS_VERSION="WPS-3.9.1"
+        elif [[ $compier_index -eq 1 ]]; then
+            WPS_VERSION="WPS-4.2"
         elif [[ $compier_index -eq 2 ]]; then
             WPS_VERSION="WPS-4.3"
         fi
