@@ -1101,6 +1101,8 @@ getWPS() {
             fi
 
             sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wps
+            sed -i 's/-ffree-form -O -fconvert=big-endian -frecord-marker=4/-ffree-form -O -fconvert=big-endian -frecord-marker=4 -fallow-argument-mismatch/g' ./configure.wps
+            sed -i 's/-ffixed-form -O -fconvert=big-endian -frecord-marker=4/-ffixed-form -O -fconvert=big-endian -frecord-marker=4 -fallow-argument-mismatch/g' ./configure.wps
             echo " ============================================================== "
         elif [ "$CC_VERSION" == "icc" ];then
             echo " ============================================================== "
