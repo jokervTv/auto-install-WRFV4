@@ -35,7 +35,7 @@ MPICXX_VERSION="mpic++"
 OPENMPI_VERSION="openmpi-4.1.1"
 ZLIB_VERSION="zlib-1.2.11"
 JASPER_VERSION="jasper-2.0.14"
-HDF5_VERSION="hdf5-1.13.1"
+HDF5_VERSION="hdf5-1.12.2"
 NETCDF_VERSION="netcdf-c-4.9.1"
 NETCDF_FORTRAN_VERSION="netcdf-fortran-4.6.0"
 BISON_VERSION="bison-3.5.4" #http://ftpmirror.gnu.org/bison/
@@ -47,6 +47,7 @@ WRFDA_VERSION="WRFDA-4.2" #https://github.com/wrf-model/WRF
 PIO_VERSION="pio-1.7.4" #https://github.com/NCAR/ParallelIO/
 PNETCDF_VERSION="pnetcdf-1.11.2" #https://github.com/Parallel-NetCDF/PnetCDF
 MPAS_VERSION="MPAS-Model-7.0" #https://github.com/MPAS-Dev/MPAS-Model
+CMAQ_VERSION="CMAQv5.4"
 
 # Check flag
 WRF_INSTALL_FLAG=1
@@ -449,34 +450,73 @@ getLibrary() {
     echo "=========================================================="
     if [ "$OS_RELEASE" = "ubuntu" ]; then
 
-        sudo $PACKAGE_MANAGER -yqq install libjpeg8* perl curl glibc*
-        sudo $PACKAGE_MANAGER -yqq install libgrib2c0d libgrib2c-dev libpng16*
+        sudo $PACKAGE_MANAGER -yqq install libjpeg8*
+        sudo $PACKAGE_MANAGER -yqq install perl
+        sudo $PACKAGE_MANAGER -yqq install curl
+        sudo $PACKAGE_MANAGER -yqq install glibc*
+        sudo $PACKAGE_MANAGER -yqq install libgrib2c0d
+        sudo $PACKAGE_MANAGER -yqq install libgrib2c-dev
+        sudo $PACKAGE_MANAGER -yqq install libpng16*
         sudo $PACKAGE_MANAGER -yqq install libpng-tools
-        sudo $PACKAGE_MANAGER -yqq install zlib1g zlib1g-dev
+        sudo $PACKAGE_MANAGER -yqq install zlib1g
+        sudo $PACKAGE_MANAGER -yqq install zlib1g-dev
         sudo $PACKAGE_MANAGER -yqq install libpng-devel
         sudo $PACKAGE_MANAGER -yqq install libpng-dev
-        sudo $PACKAGE_MANAGER -yqq install tcsh samba cpp m4 quota
-        sudo $PACKAGE_MANAGER -yqq install cmake make wget tar
-        sudo $PACKAGE_MANAGER -yqq install autoconf libtool automake
-        sudo $PACKAGE_MANAGER -yqq install autopoint gettext
-        sudo $PACKAGE_MANAGER -yqq install gcc g++ gfortran
-        sudo $PACKAGE_MANAGER -yqq install libcurl4-openssl-dev libcurl4
-        sudo $PACKAGE_MANAGER -yqq install libxml2-dev libxml2
+        sudo $PACKAGE_MANAGER -yqq install tcsh
+        sudo $PACKAGE_MANAGER -yqq install samba
+        sudo $PACKAGE_MANAGER -yqq install cpp
+        sudo $PACKAGE_MANAGER -yqq install m4
+        sudo $PACKAGE_MANAGER -yqq install quota
+        sudo $PACKAGE_MANAGER -yqq install cmake
+        sudo $PACKAGE_MANAGER -yqq install make
+        sudo $PACKAGE_MANAGER -yqq install wget
+        sudo $PACKAGE_MANAGER -yqq install tar
+        sudo $PACKAGE_MANAGER -yqq install autoconf
+        sudo $PACKAGE_MANAGER -yqq install libtool
+        sudo $PACKAGE_MANAGER -yqq install automake
+        sudo $PACKAGE_MANAGER -yqq install autopoint
+        sudo $PACKAGE_MANAGER -yqq install gettext
+        sudo $PACKAGE_MANAGER -yqq install gcc
+        sudo $PACKAGE_MANAGER -yqq install g++
+        sudo $PACKAGE_MANAGER -yqq install gfortran
+        sudo $PACKAGE_MANAGER -yqq install libcurl4-openssl-dev
+        sudo $PACKAGE_MANAGER -yqq install libcurl4
+        sudo $PACKAGE_MANAGER -yqq install libxml2-dev
+        sudo $PACKAGE_MANAGER -yqq install libxml2
         sudo $PACKAGE_MANAGER -yqq install git
 
     elif [ "$OS_RELEASE" = "centos" ]; then
 
-        sudo $PACKAGE_MANAGER -yqq install libjpeg-turbo libjpeg-turbo-devel
-        sudo $PACKAGE_MANAGER -yqq install libpng-devel libpng16*
-        sudo $PACKAGE_MANAGER -yqq install tcsh samba cpp m4 quota
-        sudo $PACKAGE_MANAGER -yqq install gcc gcc-c++ gcc-gfortran
-        sudo $PACKAGE_MANAGER -yqq install cmake make wget tar
-        sudo $PACKAGE_MANAGER -yqq install autoconf libtool automake
-        sudo $PACKAGE_MANAGER -yqq install gettext-devel gettext
-        sudo $PACKAGE_MANAGER -yqq install libcurl-devel libcurl curl
-        sudo $PACKAGE_MANAGER -yqq install git perl
-        sudo $PACKAGE_MANAGER -yqq install libxml2-devel libxml2
-        sudo $PACKAGE_MANAGER -yqq install freeglut-devel freeglut
+        sudo $PACKAGE_MANAGER -yqq install libjpeg-turbo
+        sudo $PACKAGE_MANAGER -yqq install libjpeg-turbo-devel
+        sudo $PACKAGE_MANAGER -yqq install libpng-devel
+        sudo $PACKAGE_MANAGER -yqq install libpng16*
+        sudo $PACKAGE_MANAGER -yqq install tcsh
+        sudo $PACKAGE_MANAGER -yqq install samba
+        sudo $PACKAGE_MANAGER -yqq install cpp
+        sudo $PACKAGE_MANAGER -yqq install m4
+        sudo $PACKAGE_MANAGER -yqq install quota
+        sudo $PACKAGE_MANAGER -yqq install gcc
+        sudo $PACKAGE_MANAGER -yqq install gcc-c++
+        sudo $PACKAGE_MANAGER -yqq install gcc-gfortran
+        sudo $PACKAGE_MANAGER -yqq install cmake
+        sudo $PACKAGE_MANAGER -yqq install make
+        sudo $PACKAGE_MANAGER -yqq install wget
+        sudo $PACKAGE_MANAGER -yqq install tar
+        sudo $PACKAGE_MANAGER -yqq install autoconf
+        sudo $PACKAGE_MANAGER -yqq install libtool
+        sudo $PACKAGE_MANAGER -yqq install automake
+        sudo $PACKAGE_MANAGER -yqq install gettext-devel
+        sudo $PACKAGE_MANAGER -yqq install gettext
+        sudo $PACKAGE_MANAGER -yqq install libcurl-devel
+        sudo $PACKAGE_MANAGER -yqq install libcurl
+        sudo $PACKAGE_MANAGER -yqq install curl
+        sudo $PACKAGE_MANAGER -yqq install git
+        sudo $PACKAGE_MANAGER -yqq install perl
+        sudo $PACKAGE_MANAGER -yqq install libxml2-devel
+        sudo $PACKAGE_MANAGER -yqq install libxml2
+        sudo $PACKAGE_MANAGER -yqq install freeglut-devel
+        sudo $PACKAGE_MANAGER -yqq install freeglut
     fi
 }
 
@@ -570,6 +610,21 @@ getJasper() {
         export JASPERINC=$LIB_INSTALL_DIR/$1/include
         export LD_LIBRARY_PATH=$TEMP_JASPER_LIB_DIR:$LD_LIBRARY_PATH
     fi
+}
+
+getFreeglut3() {
+    if [ ! -s "$LIB_INSTALL_DIR/$1/lib/libglut.so" ]; then
+        wgetSource $1
+        CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
+        ./configure --prefix=$LIB_INSTALL_DIR/$1 &>$LOG_DIR/$1.conf.log
+        makeInstall $1
+        if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
+            echo '' >> $HOME/.bashrc
+            echo "#for $1" >> $HOME/.bashrc
+            echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$1'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+        fi
+    fi
+    export LD_LIBRARY_PATH=$LIB_INSTALL_DIR/$1/lib:$LD_LIBRARY_PATH
 }
 
 # Install hdf5
@@ -1199,6 +1254,11 @@ getMPAS() {
 
 getRegRM4() {
     wget https://github.com/ictp-esp/RegCM/archive/refs/tags/4.7.9.tar.gz
+}
+
+# TODO
+getCMAQ() {
+    
 }
 
 # ---------------------------------------
