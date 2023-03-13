@@ -297,8 +297,8 @@ getOpenmp() {
 
     if [[ -n $READ_CORE_NUMBER ]]; then
         if [ $READ_CORE_NUMBER -ne 0 ]; then
-            MAKE_OPENMP="-j$cores_number"
-            WRF_WPS_OPENMP="-j $cores_number"
+            MAKE_OPENMP="-j$READ_CORE_NUMBER"
+            WRF_WPS_OPENMP="-j $READ_CORE_NUMBER"
         fi
     fi
 }
