@@ -911,7 +911,7 @@ getWRF() {
         fi
 
         echo -e "\nCompile WRF"
-        ./compile $WRF_WPS_OPENMP em_real &> $LOG_DIR/WRF_em_real.log
+        tcsh ./compile $WRF_WPS_OPENMP em_real &> $LOG_DIR/WRF_em_real.log
         flag=0
         for file in $(ls $HOME/$WRF_VERSION/main/*.exe)
         do
@@ -967,7 +967,7 @@ getWRFplus() {
 
         echo -e "\nCompile wrfplus"
         sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wrf
-        ./compile $WRF_WPS_OPENMP wrfplus &> $LOG_DIR/WRFplus_compile.log
+        tcsh ./compile $WRF_WPS_OPENMP wrfplus &> $LOG_DIR/WRFplus_compile.log
         export WRFPLUS_DIR=$HOME/$1
         echo "export WRFPLUS_DIR=$HOME/$1" >> $HOME/.bashrc
         flag=0
@@ -1028,7 +1028,7 @@ getWRFDA() {
         fi
 
         echo -e "\nCompile WRFDA with wrfplus"
-        ./compile $WRF_WPS_OPENMP all_wrfvar >& $LOG_DIR/WRFDA_compile.log
+        tcsh ./compile $WRF_WPS_OPENMP all_wrfvar >& $LOG_DIR/WRFDA_compile.log
         flag=0
         for file in $(ls $HOME/$WRFDA_VERSION/var/build/*.exe)
         do
@@ -1098,7 +1098,7 @@ getWRFHydro() {
         fi
 
         sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wrf
-        ./compile $WRF_WPS_OPENMP em_real &> $LOG_DIR/WRF_em_real.log
+        tcsh ./compile $WRF_WPS_OPENMP em_real &> $LOG_DIR/WRF_em_real.log
         flag=0
         for file in $(ls $HOME/$WRF_VERSION/main/*.exe)
         do
@@ -1169,7 +1169,7 @@ getWPS() {
         fi
 
         echo -e "\nCompile WPS"
-        ./compile &> $LOG_DIR/$1.compile.log
+        tcsh ./compile &> $LOG_DIR/$1.compile.log
 
         flag=0
         for file in $(ls $HOME/$WPS_VERSION/util/*.exe)
