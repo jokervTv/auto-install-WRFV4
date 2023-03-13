@@ -310,15 +310,25 @@ reSetEnv() {
     echo '' >> $HOME/.bashrc
 
     echo "#for $ZLIB_VERSION" >> $HOME/.bashrc
+    if [ ! -n "$LD_LIBRARY_PATH" ]; then
+        echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$ZLIB_VERSION'/lib' >> $HOME/.bashrc
+    else
     echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$ZLIB_VERSION'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+    fi
     echo '' >> $HOME/.bashrc
 
     if [[ $WPS_VERSION < "WPS-4.4" ]]; then
+        if [[ $OS_RELEASE == "centos" ]]; then
+            TEMP_JASPER_LIB_DIR=$LIB_INSTALL_DIR'/'$JASPER_VERSION'/lib64:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+        else
+            TEMP_JASPER_LIB_DIR=$LIB_INSTALL_DIR'/'$JASPER_VERSION'/lib' >> $HOME/.bashrc
+        fi
+
         echo "#for $JASPER_VERSION" >> $HOME/.bashrc
         echo "export JASPER=$LIB_INSTALL_DIR/$JASPER_VERSION" >> $HOME/.bashrc
         echo "export JASPERLIB=$TEMP_JASPER_LIB_DIR" >> $HOME/.bashrc
         echo "export JASPERINC=$LIB_INSTALL_DIR/$JASPER_VERSION/include" >> $HOME/.bashrc
-        echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$JASPER_VERSION'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+        echo "export LD_LIBRARY_PATH=$TEMP_JASPER_LIB_DIR" >> $HOME/.bashrc
     fi
 
     echo '' >> $HOME/.bashrc
@@ -330,6 +340,11 @@ reSetEnv() {
     echo 'export PATH='$LIB_INSTALL_DIR'/'$NETCDF_VERSION'/bin:$PATH' >> $HOME/.bashrc
     echo "export NETCDF=$LIB_INSTALL_DIR/$NETCDF_VERSION" >> $HOME/.bashrc
     echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$NETCDF_VERSION'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+
+    echo '' >> $HOME/.bashrc
+    echo "#for $OPENMPI_VERSION" >> $HOME/.bashrc
+    echo 'export PATH='$LIB_INSTALL_DIR'/'$OPENMPI_VERSION'/bin:$PATH' >> $HOME/.bashrc
+    echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$OPENMPI_VERSION'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
 }
 
 # Change sources
@@ -571,7 +586,11 @@ getZilb() {
         if [ ! -s $HOME/.bashrc.autoInstall.bak ];then
             echo '' >> $HOME/.bashrc
             echo "#for $1" >> $HOME/.bashrc
-            echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$1'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+            if [ ! -n "$LD_LIBRARY_PATH" ]; then
+                echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$ZLIB_VERSION'/lib' >> $HOME/.bashrc
+            else
+                echo 'export LD_LIBRARY_PATH='$LIB_INSTALL_DIR'/'$ZLIB_VERSION'/lib:$LD_LIBRARY_PATH' >> $HOME/.bashrc
+            fi
         fi
     fi
     export LD_LIBRARY_PATH=$LIB_INSTALL_DIR/$1/lib:$LD_LIBRARY_PATH
