@@ -17,7 +17,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: check WRF
-        run: autoInstall.sh -d "/home/zhangYongPeng/.WRF_MPAS_LIB" -f 1 -v ${{ matrix.version }} -c 0 -n 2 -s 0
+        run: autoInstall.sh -d "./" -f 1 -v ${{ matrix.version }} -c 0 -n 2 -s 0
         shell: bash
 
   check-WRF-chem:
@@ -29,7 +29,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: check WRF-chem
-        run: autoInstall.sh -d "/home/zhangYongPeng/.WRF_MPAS_LIB" -f 2 -v ${{ matrix.version }} -c 0 -n 2 -s 0
+        run: autoInstall.sh -d "./" -f 2 -v ${{ matrix.version }} -c 0 -n 2 -s 0
         shell: bash
 
   check-WRF-hydro:
@@ -41,7 +41,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: check WRF-hydro
-        run: autoInstall.sh -d "/home/zhangYongPeng/.WRF_MPAS_LIB" -f 3 -v ${{ matrix.version }} -c 0 -n 2 -s 0
+        run: autoInstall.sh -d "./" -f 3 -v ${{ matrix.version }} -c 0 -n 2 -s 0
         shell: bash
 
   check-WRF-4dvar:
@@ -53,5 +53,5 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: check WRF-4dvar
-        run: autoInstall.sh -d "/home/zhangYongPeng/.WRF_MPAS_LIB" -f 4 -v ${{ matrix.version }} -c 0 -n 2 -s 0
+        run: autoInstall.sh -d "./" -f 4 -v ${{ matrix.version }} -c 0 -n 2 -s 0
         shell: bash
