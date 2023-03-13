@@ -44,6 +44,7 @@ WPS_VERSION="WPS-4.2" #https://github.com/wrf-model/WPS
 WRF_VERSION="WRF-4.2" #https://github.com/wrf-model/WRF
 WRFplus_VERSION="WRFplus-4.2" #https://github.com/wrf-model/WRF
 WRFDA_VERSION="WRFDA-4.2" #https://github.com/wrf-model/WRF
+WRF_HYDRO_VERSION="wrf_hydro_nwm_public-5.2.0" #https://github.com/NCAR/wrf_hydro_nwm_public
 PIO_VERSION="pio-1.7.4" #https://github.com/NCAR/ParallelIO/
 PNETCDF_VERSION="pnetcdf-1.11.2" #https://github.com/Parallel-NetCDF/PnetCDF
 MPAS_VERSION="MPAS-Model-7.0" #https://github.com/MPAS-Dev/MPAS-Model
@@ -1097,6 +1098,15 @@ getWRFHydro() {
                 tar -xf $1.tar.gz -C $HOME/
             fi
         fi
+        echo "Download latest WRF-hydro"
+        if [ ! -s $SRC_DIR/$WRF_HYDRO_VERSION/trunk/NDHMS/configure ];then
+            wgetSource $1
+        fi
+        cd $HOME
+        rm -f $HOME/$WRF_VERSION/hydro
+        cp -r $SRC_DIR/$WRF_HYDRO_VERSION/trunk/NDHMS $HOME/$WRF_VERSION/hydro
+
+
         cd $HOME/$1
         source hydro/template/setEnvar.sh
         echo " ============================================================== "
