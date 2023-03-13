@@ -47,7 +47,6 @@ WRFDA_VERSION="WRFDA-4.2" #https://github.com/wrf-model/WRF
 PIO_VERSION="pio-1.7.4" #https://github.com/NCAR/ParallelIO/
 PNETCDF_VERSION="pnetcdf-1.11.2" #https://github.com/Parallel-NetCDF/PnetCDF
 MPAS_VERSION="MPAS-Model-7.0" #https://github.com/MPAS-Dev/MPAS-Model
-CMAQ_VERSION="CMAQv5.4"
 
 # Check flag
 WRF_INSTALL_FLAG=1
@@ -684,7 +683,7 @@ getNetCDF() {
         wgetSource $1
 
         CC=$CC_VERSION CXX=$CXX_VERSION FC=$FC_VERSION  \
-        ./configure --prefix=$LIB_INSTALL_DIR/$NETCDF_VERSION --disable-dap &>$LOG_DIR/$1.conf.log
+        ./configure --prefix=$LIB_INSTALL_DIR/$NETCDF_VERSION --enable-netcdf4 --disable-dap &>$LOG_DIR/$1.conf.log
 
         makeInstall $1
 
@@ -1256,11 +1255,6 @@ getMPAS() {
 
 getRegRM4() {
     wget https://github.com/ictp-esp/RegCM/archive/refs/tags/4.7.9.tar.gz
-}
-
-# TODO
-getCMAQ() {
-    
 }
 
 # ---------------------------------------
