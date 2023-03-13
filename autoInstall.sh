@@ -898,14 +898,14 @@ getWRF() {
         if [ "$CC_VERSION" == "gcc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure WRF: 34. (dmpar) GNU(gfortran/gcc)"
-            echo -e '34\n1' | ./configure
+            echo -e '34\n1' | bash ./configure
             echo " ============================================================== "
             sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp -lpthread/g' ./configure.wrf
             sed -i '32s/-ffree-form -O -fno-second-underscore -fconvert=big-endian -frecord-marker=4/-ffree-form -O -fno-second-underscore -fconvert=big-endian -frecord-marker=4 -std=legacy/g' ./configure.wrf
         elif [ "$CC_VERSION" == "icc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure WRF: 15. (dmpar) INTEL (ifort/icc)"
-            echo -e '15\n1' | ./configure
+            echo -e '15\n1' | bash ./configure
             echo " ============================================================== "
             sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp -lpthread -liomp5/g' ./configure.wrf
         fi
@@ -956,12 +956,12 @@ getWRFplus() {
         if [ "$CC_VERSION" == "gcc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure wrfplus: 18. (dmpar)   GNU (gfortran/gcc)"
-            echo '18' | ./configure wrfplus
+            echo '18' | bash ./configure wrfplus
             echo " ============================================================== "
         elif [ "$CC_VERSION" == "icc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure wrfplus:  8. (dmpar)   INTEL (ifort/icc)"
-            echo '8' | ./configure wrfplus
+            echo '8' | bash ./configure wrfplus
             echo " ============================================================== "
         fi
 
@@ -1018,12 +1018,12 @@ getWRFDA() {
         if [ "$CC_VERSION" == "gcc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure WRFDA: 18. (dmpar)   GNU (gfortran/gcc)"
-            echo '18' | ./configure 4dvar
+            echo '18' | bash ./configure 4dvar
             echo " ============================================================== "
         elif [ "$CC_VERSION" == "icc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure WRFDA:  8. (dmpar)    INTEL (ifort/icc)"
-            echo '8' | ./configure 4dvar
+            echo '8' | bash ./configure 4dvar
             echo " ============================================================== "
         fi
 
@@ -1149,9 +1149,9 @@ getWPS() {
             echo -e "\nConfigure WPS: 1. Linux x86_64,gfortran (serial)"
 
             if [[ $WPS_VERSION < "WPS-4.4" ]]; then
-                echo '1' | ./configure &>$LOG_DIR/$1.config.log
+                echo '1' | bash ./configure &>$LOG_DIR/$1.config.log
             else
-                echo '1' | ./configure --build-grib2-libs &>$LOG_DIR/$1.config.log
+                echo '1' | bash ./configure --build-grib2-libs &>$LOG_DIR/$1.config.log
             fi
 
             sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp/g' ./configure.wps
@@ -1161,7 +1161,7 @@ getWPS() {
         elif [ "$CC_VERSION" == "icc" ];then
             echo " ============================================================== "
             echo -e "\nConfigure WPS: 19. Linux x86_64, Intel compiler (dmpar)"
-            echo '19' | ./configure &>$LOG_DIR/$1.config.log
+            echo '19' | bash ./configure &>$LOG_DIR/$1.config.log
             sed -i 's/-lnetcdff -lnetcdf/-lnetcdff -lnetcdf -lgomp -lpthread -liomp5/g' ./configure.wps
             sed -i 's/DM_FC               = mpifort/DM_FC               = mpiifort/g' ./configure.wps
             sed -i 's/DM_CC               = mpicc/DM_CC               = mpiicc/g' ./configure.wps
@@ -1349,17 +1349,33 @@ WORKFLOW=""
 while getopts "d:f:v:c:n:s:p:" opt;
 do
     case $opt in
-        d) READ_INSTALL_DIR=$OPTARG;;
-        f) READ_WRF_FEATURE=$OPTARG;;
-        v) READ_WRF_VERSION=$OPTARG
-           READ_WPS_VERSION=$OPTARG;;
-        c) READ_COMPILER_ID=$OPTARG;;
-        n) READ_CORE_NUMBER=$OPTARG;;
-        s) READ_SOFT_SOURCE=$OPTARG;;
-        p) WORKFLOW=$OPTARG;;
-        ?) echo "Unknown parameter: $opt"
-           showHelp
-           exit 1;;
+        d)
+            READ_INSTALL_DIR=$OPTARG
+            ;;
+        f)
+            READ_WRF_FEATURE=$OPTARG
+            ;;
+        v)
+            READ_WRF_VERSION=$OPTARG
+            READ_WPS_VERSION=$OPTARG
+            ;;
+        c)
+            READ_COMPILER_ID=$OPTARG
+            ;;
+        n)
+            READ_CORE_NUMBER=$OPTARG
+            ;;
+        s)
+            READ_SOFT_SOURCE=$OPTARG
+            ;;
+        p)
+            WORKFLOW=$OPTARG
+            ;;
+        ?)
+            echo "Unknown parameter: $opt"
+            showHelp
+            exit 1
+            ;;
     esac
 done
 
