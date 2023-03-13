@@ -1287,18 +1287,20 @@ envConfig() {
     getWRFVersion
     getWPSVersion
     getCompiler
-    getOpenmp
     checkInfo
+    getOpenmp
     if [[ $SERVER_FLAG -eq 0 ]];then
         checkMem
-        getLibrary
         setSources
+        getLibrary
     fi
     creatLogs
 }
 
 envInstall() {
-    getOpenMPI  $OPENMPI_VERSION
+    if [[ $SERVER_FLAG -eq 0 ]];then
+        getOpenMPI  $OPENMPI_VERSION
+    fi
     getZilb     $ZLIB_VERSION
     getJasper   $JASPER_VERSION
     getHDF5     $HDF5_VERSION
