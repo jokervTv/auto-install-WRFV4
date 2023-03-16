@@ -18,7 +18,7 @@ MAKE_OPENMP="-j4"
 WRF_WPS_OPENMP='-j 4'
 TEST_FLAG="0"
 SERVER_FLAG="0"
-LIB_INSTALL_DIR="$HOME/.WRF_MPAS_LIB"
+LIB_INSTALL_DIR="$HOME/.WRF_LIB"
 LOG_DIR="$HOME/log-wrf-mpas"
 SRC_DIR="$HOME/src-wrf-mpas"
 DOWNLOAD_URL="http://wrflib.jokervtv.top"
@@ -73,20 +73,21 @@ wgetSource() {
     cd $SRC_DIR
 
     if [[ ! -f $1.tar.gz.sha256 ]]; then
-        wget -cnv $DOWNLOAD_URL/$1.tar.gz.sha256
+        wget $DOWNLOAD_URL/$1.tar.gz.sha256
     fi
 
     if [[ -f $1.tar.gz ]]; then
+        echo " check $1"
         sha256sum -c $1.tar.gz.sha256 --status
         status=$?
         if [[ status -ne 0 ]]; then
             rm -f $SRC_DIR/$1.tar.gz
             echo " Download $1"
-            wget -cnv $DOWNLOAD_URL/$1.tar.gz
+            wget $DOWNLOAD_URL/$1.tar.gz
         fi
     else
         echo " Download $1"
-        wget -cnv $DOWNLOAD_URL/$1.tar.gz
+        wget $DOWNLOAD_URL/$1.tar.gz
 
     fi
 
@@ -1077,8 +1078,6 @@ getWRFHydro() {
         echo '' >> $HOME/.bashrc
         echo "#for $WRF_VERSION" >> $HOME/.bashrc
         echo 'export WRFIO_NCD_LARGE_FILE_SUPPORT=1' >> $HOME/.bashrc
-        echo "export WRF_CHEM=$WRF_CHEM_SETTING" >> $HOME/.bashrc
-        echo "export WRF_KPP=$WRF_KPP_SETTING" >> $HOME/.bashrc
         mv $HOME/.bashrc.autoInstall.bak.temp $HOME/.bashrc.autoInstall.bak
     fi
     export WRF_HYDRO=1
@@ -1100,10 +1099,10 @@ getWRFHydro() {
         fi
         echo "Download latest WRF-hydro"
         if [ ! -s $SRC_DIR/$WRF_HYDRO_VERSION/trunk/NDHMS/configure ];then
-            wgetSource $1
+            wgetSource $2
         fi
         cd $HOME
-        rm -f $HOME/$WRF_VERSION/hydro
+        rm -r $HOME/$WRF_VERSION/hydro
         cp -r $SRC_DIR/$WRF_HYDRO_VERSION/trunk/NDHMS $HOME/$WRF_VERSION/hydro
 
 
@@ -1337,7 +1336,7 @@ wrfChemInstall() {
 }
 
 wrfHydroInstall() {
-    getWRFHydro $WRF_VERSION
+    getWRFHydro $WRF_VERSION $WRF_HYDRO_VERSION
     getWPS      $WPS_VERSION
 }
 
