@@ -32,14 +32,14 @@ MPIFC_VERSION="mpifort"
 MPICXX_VERSION="mpic++"
 
 # Version
-OPENMPI_VERSION="openmpi-4.1.1"
+OPENMPI_VERSION="mpich-4.1.1"
 ZLIB_VERSION="zlib-1.2.11"
-JASPER_VERSION="jasper-2.0.14"
+JASPER_VERSION="jasper-2.0.33"
 HDF5_VERSION="hdf5-1.12.2"
 NETCDF_VERSION="netcdf-c-4.9.1"
 NETCDF_FORTRAN_VERSION="netcdf-fortran-4.6.0"
-BISON_VERSION="bison-3.5.4" #http://ftpmirror.gnu.org/bison/
-FLEX_VERSION="flex-2.6.4" #https://github.com/westes/flex
+BISON_VERSION="bison-3.8.2" #http://ftpmirror.gnu.org/bison/
+FLEX_VERSION="flex-2.5.39" #https://github.com/westes/flex
 WPS_VERSION="WPS-4.2" #https://github.com/wrf-model/WPS
 WRF_VERSION="WRF-4.2" #https://github.com/wrf-model/WRF
 WRFplus_VERSION="WRFplus-4.2" #https://github.com/wrf-model/WRF
@@ -98,13 +98,9 @@ wgetSource() {
     echo " Configure & make $1"
 }
 
-# receivec a lib name as $1 to install or install with testing
+# receivec a lib name as $1 to install
 makeInstall() {
     make $MAKE_OPENMP &>$LOG_DIR/$1.make.log
-    if [ "$TEST_FLAG" -eq "1" ];then
-        make check        &>$LOG_DIR/$1.check.log
-        make test         &>$LOG_DIR/$1.test.log
-    fi
     make install      &>$LOG_DIR/$1.install.log
 }
 
@@ -376,11 +372,10 @@ chooseFeatures() {
     echo "Which option do you wanna choose ? (defualt: 0)"
     echo ""
     echo "  1. WPS, WRF:em_real"
+    echo "  2. WPS, WRF:em_real, WRF-chem (with Kpp)"
     if [ "$OS_RELEASE" == "centos" ];then
-        echo "  2. WPS, WRF:em_real, WRF-chem (with Kpp)"
         echo "  3. WPS, WRF:em_real, WRF-hydro (support soon, NOT currently supported)"
     elif [ "$OS_RELEASE" == "ubuntu" ];then
-        echo "  2. WPS, WRF:em_real, WRF-chem (without Kpp)"
         echo "  3. WPS, WRF:em_real, WRF-hydro"
     fi
     echo "  4. WPS, WRF:em_real, WRFDA:4dvar"
@@ -785,12 +780,12 @@ getBison() {
             echo "#for $1" >> $HOME/.bashrc
             echo 'export PATH='$LIB_INSTALL_DIR'/'$1'/bin:$PATH' >> $HOME/.bashrc
             echo 'export PATH='$LIB_INSTALL_DIR'/'$1':$PATH' >> $HOME/.bashrc
-            echo "export YACC='yacc -d'" >> $HOME/.bashrc
+            echo 'export YACC='"'"$LIB_INSTALL_DIR'/'$1'/yacc -d'"'" >> $HOME/.bashrc
         fi
     fi
     export PATH=$LIB_INSTALL_DIR/$1:$PATH
     export PATH=$LIB_INSTALL_DIR/$1/bin:$PATH
-    export YACC='yacc -d'
+    export YACC="$LIB_INSTALL_DIR/$1/yacc -d"
 }
 
 # Install flex
@@ -1241,9 +1236,13 @@ checkFinishWRF() {
             ls -d $HOME/$WRFplus_VERSION --color=auto
             ls -d $HOME/$WRFDA_VERSION --color=auto
         fi
-        echo -e "\nClean"
-        rm $SRC_DIR -r
+
+        if [[ $TEST_FLAG -ne 1 ]];then
+            rm $SRC_DIR -r
+        fi
+
         rm $LOG_DIR -r
+        
         echo -e "\nEnjoy it\n"
 
         exit 0
@@ -1324,13 +1323,8 @@ wrfInstall() {
 wrfChemInstall() {
     getBison    $BISON_VERSION
     getFlex     $FLEX_VERSION
-    if [ "$OS_RELEASE" == "centos" ];then
-        WRF_CHEM_SETTING=1
-        WRF_KPP_SETTING=1
-    elif [ "$OS_RELEASE" == "ubuntu" ];then
-        WRF_CHEM_SETTING=1
-        WRF_KPP_SETTING=0
-    fi
+    WRF_CHEM_SETTING=1
+    WRF_KPP_SETTING=1
     getWRF      $WRF_VERSION
     getWPS      $WPS_VERSION
 }
@@ -1375,8 +1369,9 @@ wrfFeatureInstall() {
 #-------functions end--------
 
 WORKFLOW=""
+export LANG=en_US.UTF-8
 
-while getopts "d:f:v:c:n:s:p:" opt;
+while getopts "d:f:v:c:n:s:p:t" opt;
 do
     case $opt in
         d)
@@ -1401,6 +1396,9 @@ do
         p)
             WORKFLOW=$OPTARG
             ;;
+        t)
+            TEST_FLAG=1
+            ;;
         ?)
             echo "Unknown parameter: $opt"
             showHelp
@@ -1409,10 +1407,10 @@ do
     esac
 done
 
-if [[ $WORKFLOW == "resetEnv" ]]; then
-    reSetEnv
-elif [[ $WORKFLOW == "help" ]]; then
+if [[ $WORKFLOW == "help" ]]; then
     showHelp
+elif [[ $WORKFLOW == "resetEnv" ]]; then
+    reSetEnv
 elif [[ $WORKFLOW == "server" ]]; then
     SERVER_FLAG="1"
     envConfig
