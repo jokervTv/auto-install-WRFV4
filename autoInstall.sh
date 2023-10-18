@@ -488,7 +488,6 @@ getLibrary() {
         sudo $PACKAGE_MANAGER -yqq install quota
         sudo $PACKAGE_MANAGER -yqq install cmake
         sudo $PACKAGE_MANAGER -yqq install make
-        sudo $PACKAGE_MANAGER -yqq install wget
         sudo $PACKAGE_MANAGER -yqq install tar
         sudo $PACKAGE_MANAGER -yqq install autoconf
         sudo $PACKAGE_MANAGER -yqq install libtool
@@ -520,7 +519,6 @@ getLibrary() {
         sudo $PACKAGE_MANAGER -yqq install gcc-gfortran
         sudo $PACKAGE_MANAGER -yqq install cmake
         sudo $PACKAGE_MANAGER -yqq install make
-        sudo $PACKAGE_MANAGER -yqq install wget
         sudo $PACKAGE_MANAGER -yqq install tar
         sudo $PACKAGE_MANAGER -yqq install autoconf
         sudo $PACKAGE_MANAGER -yqq install libtool
@@ -1288,10 +1286,6 @@ getMPAS() {
     make $FC_VERSION CORE=atmosphere OPENMP=true &>$LOG_DIR/MPAS-atmosphere.log
 }
 
-getRegRM4() {
-    wget https://github.com/ictp-esp/RegCM/archive/refs/tags/4.7.9.tar.gz
-}
-
 # ---------------------------------------
 
 envConfig() {
@@ -1300,8 +1294,10 @@ envConfig() {
     # checkRoot
     getDir
     chooseFeatures
-    getWRFVersion
-    getWPSVersion
+    if [[ $READ_WRF_FEATURE -ne 0 ]];then
+        getWRFVersion
+        getWPSVersion
+    fi
     getCompiler
     checkInfo
     getOpenmp
