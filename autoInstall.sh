@@ -1378,6 +1378,7 @@ wrfFeatureInstall() {
 
 WORKFLOW=""
 export LANG=en_US.UTF-8
+export LANGUAGE=en_US:en
 
 while getopts "d:f:v:c:n:s:p:t" opt;
 do
