@@ -32,7 +32,7 @@ MPIFC_VERSION="mpifort"
 MPICXX_VERSION="mpic++"
 
 # Version
-OPENMPI_VERSION="mpich-4.1.1"
+OPENMPI_VERSION="openmpi-4.1.1"
 ZLIB_VERSION="zlib-1.2.11"
 JASPER_VERSION="jasper-2.0.33"
 HDF5_VERSION="hdf5-1.12.2"
