@@ -73,7 +73,7 @@ wgetSource() {
     cd $SRC_DIR
 
     if [[ ! -f $1.tar.gz.sha256 ]]; then
-        wget $DOWNLOAD_URL/$1.tar.gz.sha256
+        wget -cnv $DOWNLOAD_URL/$1.tar.gz.sha256
     fi
 
     if [[ -f $1.tar.gz ]]; then
@@ -83,11 +83,11 @@ wgetSource() {
         if [[ status -ne 0 ]]; then
             rm -f $SRC_DIR/$1.tar.gz
             echo " Download $1"
-            wget $DOWNLOAD_URL/$1.tar.gz
+            wget -cnv $DOWNLOAD_URL/$1.tar.gz
         fi
     else
         echo " Download $1"
-        wget $DOWNLOAD_URL/$1.tar.gz
+        wget -cnv $DOWNLOAD_URL/$1.tar.gz
 
     fi
 
@@ -488,6 +488,7 @@ getLibrary() {
         sudo $PACKAGE_MANAGER -yqq install quota
         sudo $PACKAGE_MANAGER -yqq install cmake
         sudo $PACKAGE_MANAGER -yqq install make
+        sudo $PACKAGE_MANAGER -yqq install wget
         sudo $PACKAGE_MANAGER -yqq install tar
         sudo $PACKAGE_MANAGER -yqq install autoconf
         sudo $PACKAGE_MANAGER -yqq install libtool
@@ -519,6 +520,7 @@ getLibrary() {
         sudo $PACKAGE_MANAGER -yqq install gcc-gfortran
         sudo $PACKAGE_MANAGER -yqq install cmake
         sudo $PACKAGE_MANAGER -yqq install make
+        sudo $PACKAGE_MANAGER -yqq install wget
         sudo $PACKAGE_MANAGER -yqq install tar
         sudo $PACKAGE_MANAGER -yqq install autoconf
         sudo $PACKAGE_MANAGER -yqq install libtool
