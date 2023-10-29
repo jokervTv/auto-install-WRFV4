@@ -380,10 +380,11 @@ chooseFeatures() {
     echo "Which option do you wanna choose ? (defualt: 0)"
     echo ""
     echo "  1. WPS, WRF:em_real"
-    echo "  2. WPS, WRF:em_real, WRF-chem (with Kpp)"
     if [ "$OS_RELEASE" == "centos" ];then
+        echo "  2. WPS, WRF:em_real, WRF-chem (with Kpp)"
         echo "  3. WPS, WRF:em_real, WRF-hydro (support soon, NOT currently supported)"
     elif [ "$OS_RELEASE" == "ubuntu" ];then
+        echo "  2. WPS, WRF:em_real, WRF-chem (without Kpp)"
         echo "  3. WPS, WRF:em_real, WRF-hydro"
     fi
     echo "  4. WPS, WRF:em_real, WRFDA:4dvar"
