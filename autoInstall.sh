@@ -205,6 +205,7 @@ getWRFVersion() {
     echo "  2. 4.3"
     echo "  3. 4.4.2"
     echo "  4. 4.5"
+    echo "  5. 4.6.0"
 
     if [[ $READ_WRF_VERSION -eq 999 ]]; then
         read READ_WRF_VERSION
@@ -231,6 +232,10 @@ getWRFVersion() {
             WRF_VERSION="WRF-4.5"
             WRFplus_VERSION="WRFplus-4.5"
             WRFDA_VERSION="WRFDA-4.5"
+        elif [[ $READ_WRF_VERSION -eq 5 ]]; then
+            WRF_VERSION="WRF-4.6.0"
+            WRFplus_VERSION="WRFplus-4.6.0"
+            WRFDA_VERSION="WRFDA-4.6.0"
         fi
     fi
 }
@@ -244,6 +249,7 @@ getWPSVersion() {
     echo "  2. 4.3"
     echo "  3. 4.4"
     echo "  4. 4.5"
+    echo "  5. 4.6.0"
 
     if [[ $READ_WPS_VERSION -eq 999 ]]; then
         read READ_WPS_VERSION
@@ -260,6 +266,8 @@ getWPSVersion() {
             WPS_VERSION="WPS-4.4"
         elif [[ $READ_WPS_VERSION -eq 4 ]]; then
             WPS_VERSION="WPS-4.5"
+        elif [[ $READ_WPS_VERSION -eq 5 ]]; then
+            WPS_VERSION="WPS-4.6.0"
         fi
     fi
 }
